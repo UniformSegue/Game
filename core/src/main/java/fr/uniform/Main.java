@@ -19,8 +19,9 @@ public class Main extends Game {
     FitViewport viewport;
     private ShapeRenderer shapeRenderer;
     private Block block_blue;
-    private Block block_red;
     private List<Block> blocks;
+    private float screenHeight;
+    private float screenWidth;
 
     @Override
     public void create() {
@@ -28,11 +29,14 @@ public class Main extends Game {
         testRectangle = new Rectangle();
         viewport = new FitViewport(8, 5);
         shapeRenderer = new ShapeRenderer();
-        block_blue = new Block(50,50,100,100,Color.BLUE);
-        block_blue = new Block(100,100,100,100,Color.BLUE);
+        screenWidth = Gdx.graphics.getWidth();
+        screenHeight = Gdx.graphics.getHeight();
+
+        //Block Creation
+        block_blue = new Block(0,(int)screenHeight - 100,100,100,Color.BLUE,false);
         blocks = new ArrayList<Block>();
         blocks.add(block_blue);
-        blocks.add(block_red);
+
     }
 
     @Override
@@ -47,10 +51,26 @@ public class Main extends Game {
         float delta = Gdx.graphics.getDeltaTime();
 
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            //bucketSprite.translateX(speed * delta);
-            block.setX(block.getX() + 1);
-        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            block.setX(block.getX() - 1);
+
+            if(!block_blue.fallen) {
+
+                if (!(block_blue.x > screenWidth- block_blue.width)) {
+                    block_blue.x = block_blue.x + 1;
+                }
+            }
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+
+            if(!block_blue.fallen) {
+                if (!(block_blue.x < 0)) {
+                    block_blue.x = block_blue.x - 1;
+                    }
+            }
+
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            Block block_add = new Block(block_blue.x, block_blue.y, 100,100,Color.RED,true);;
+            blocks.add(block_add);
         }
 
         if (Gdx.input.isTouched()) {
@@ -61,23 +81,34 @@ public class Main extends Game {
     }
 
     private void logic() {
-        ScreenUtils.clear(Color.WHITE);
+        ScreenUtils.clear(Color.BLACK);
 
+        for (Block block : blocks) {
+            if(block.fallen) {
+                block.y = block.y - 1;
+                if (block.y < 0 - block.height) {
+                    block.visible = false;
+                }
+            }
+
+        }
 
     }
 
     private void draw() {
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
 
-        shapeRenderer.setColor(Color.BLUE);
+        for (Block block : blocks) {
+            if (block.visible) {
+                shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+                shapeRenderer.setColor(block.color);
+                shapeRenderer.rect(block.x, block.y, block.width, block.height);
+                shapeRenderer.end();
+            }
+        }
 
-        // 5. Dessiner le rectangle
-        // rect(x, y, largeur, hauteur)
-        shapeRenderer.rect(block.getX(), block.getY(), block.getWidth(), block.getHeight());
 
-        // 6. Terminer le dessin (très important !)
-        shapeRenderer.end();
+
 
 
 
