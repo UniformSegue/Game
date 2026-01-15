@@ -3,6 +3,9 @@ package fr.uniform.object;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
+import fr.uniform.GameEnvironnement;
+
+import java.util.List;
 
 public class Button {
 
@@ -14,6 +17,8 @@ public class Button {
     public Texture texture_unpressed;
     public Texture texture_pressed;
     public Rectangle collision;
+    public float timer;
+
 
 
     public Button(int x, int y, int width, int height, Texture texture_unpressed, Texture texture_pressed) {
@@ -28,10 +33,13 @@ public class Button {
 
     }
 
-    public void clicked(){
+    public void clicked() {
 
-        this.clicked = !clicked;
+        this.clicked = true;
+    }
+    public void unclicked() {
 
+        this.clicked = false;
     }
 
 }
