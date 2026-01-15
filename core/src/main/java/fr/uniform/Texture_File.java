@@ -32,6 +32,14 @@ public interface Texture_File {
     Texture BUTTON_F_PRESS = new Texture(Gdx.files.internal("f_button_press.png"));
     Texture BUTTON_D_UNPRESS = new Texture(Gdx.files.internal("d_button_unpress.png"));
     Texture BUTTON_D_PRESS = new Texture(Gdx.files.internal("d_button_press.png"));
+    Texture BUTTON_G_UNPRESS = new Texture(Gdx.files.internal("g_button_unpress.png"));
+    Texture BUTTON_G_PRESS = new Texture(Gdx.files.internal("g_button_press.png"));
+    Texture BUTTON_H_UNPRESS = new Texture(Gdx.files.internal("h_button_unpress.png"));
+    Texture BUTTON_H_PRESS = new Texture(Gdx.files.internal("h_button_press.png"));
+    Texture BUTTON_J_UNPRESS = new Texture(Gdx.files.internal("j_button_unpress.png"));
+    Texture BUTTON_J_PRESS = new Texture(Gdx.files.internal("j_button_press.png"));
+    Texture BUTTON_K_UNPRESS = new Texture(Gdx.files.internal("k_button_unpress.png"));
+    Texture BUTTON_K_PRESS = new Texture(Gdx.files.internal("k_button_press.png"));
 
 
     //lanes

@@ -92,7 +92,6 @@ public class Block {
 
             this.y = this.y - this.vitesse;
             this.sprite.setY(this.y);
-            System.out.println("y: " + this.y);
 
             if (this.sprite.getY() < -this.height) {
                 this.visible = false;

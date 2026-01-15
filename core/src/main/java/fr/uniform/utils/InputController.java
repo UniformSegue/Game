@@ -43,6 +43,38 @@ public class InputController extends InputAdapter {
 
             return true;
         }
+        if (keycode == Input.Keys.G) {
+
+            Button button_g = buttons.get(2);
+            button_g.clicked();
+            checkButton(lanes.get(2),button_g);
+
+            return true;
+        }
+        if (keycode == Input.Keys.H) {
+
+            Button button_h = buttons.get(3);
+            button_h.clicked();
+            checkButton(lanes.get(3),button_h);
+
+            return true;
+        }
+        if (keycode == Input.Keys.J) {
+
+            Button button_j = buttons.get(4);
+            button_j.clicked();
+            checkButton(lanes.get(4),button_j);
+
+            return true;
+        }
+        if (keycode == Input.Keys.K) {
+
+            Button button_k = buttons.get(5);
+            button_k.clicked();
+            checkButton(lanes.get(5),button_k);
+
+            return true;
+        }
         return false;
     }
 
@@ -54,8 +86,28 @@ public class InputController extends InputAdapter {
             return true;
         }
         if (keycode == Input.Keys.D) {
-            Button button_f = buttons.get(1);
-            button_f.unclicked();
+            Button button_d = buttons.get(1);
+            button_d.unclicked();
+            return true;
+        }
+        if (keycode == Input.Keys.G) {
+            Button button_g = buttons.get(2);
+            button_g.unclicked();
+            return true;
+        }
+        if (keycode == Input.Keys.H) {
+            Button button_h = buttons.get(3);
+            button_h.unclicked();
+            return true;
+        }
+        if (keycode == Input.Keys.J) {
+            Button button_j = buttons.get(4);
+            button_j.unclicked();
+            return true;
+        }
+        if (keycode == Input.Keys.K) {
+            Button button_k = buttons.get(5);
+            button_k.unclicked();
             return true;
         }
         return false;

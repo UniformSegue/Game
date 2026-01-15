@@ -1,25 +1,153 @@
 {
-  "audioFile": "test_sound_kick_1s.wav",
+  "audioFile": "test.wav",
   "notes": [
     {
-      "timestamp": 1000,
+      "timestamp": 1184,
       "lane": 0
     },
     {
-      "timestamp": 2000,
+      "timestamp": 1509,
       "lane": 1
     },
     {
-      "timestamp": 3000,
+      "timestamp": 1648,
+      "lane": 2
+    },
+    {
+      "timestamp": 1648,
+      "lane": 3
+    },
+    {
+      "timestamp": 1648,
+      "lane": 4
+    },
+    {
+      "timestamp": 1648,
+      "lane": 5
+    },
+    {
+      "timestamp": 2298,
       "lane": 0
     },
     {
-      "timestamp": 4000,
+      "timestamp": 2670,
       "lane": 1
     },
     {
-      "timestamp": 5000,
+      "timestamp": 2670,
+      "lane": 2
+    },
+    {
+      "timestamp": 2670,
+      "lane": 3
+    },
+    {
+      "timestamp": 2693,
+      "lane": 4
+    },
+    {
+      "timestamp": 2693,
+      "lane": 5
+    },
+    {
+      "timestamp": 3320,
       "lane": 0
+    },
+    {
+      "timestamp": 3808,
+      "lane": 1
+    },
+    {
+      "timestamp": 3877,
+      "lane": 2
+    },
+    {
+      "timestamp": 4226,
+      "lane": 3
+    },
+    {
+      "timestamp": 4226,
+      "lane": 4
+    },
+    {
+      "timestamp": 4226,
+      "lane": 5
+    },
+    {
+      "timestamp": 4365,
+      "lane": 0
+    },
+    {
+      "timestamp": 4829,
+      "lane": 1
+    },
+    {
+      "timestamp": 4945,
+      "lane": 2
+    },
+    {
+      "timestamp": 5247,
+      "lane": 3
+    },
+    {
+      "timestamp": 5247,
+      "lane": 4
+    },
+    {
+      "timestamp": 5247,
+      "lane": 5
+    },
+    {
+      "timestamp": 5433,
+      "lane": 0
+    },
+    {
+      "timestamp": 5897,
+      "lane": 1
+    },
+    {
+      "timestamp": 6640,
+      "lane": 2
+    },
+    {
+      "timestamp": 6710,
+      "lane": 0
+    },
+    {
+      "timestamp": 7082,
+      "lane": 1
+    },
+    {
+      "timestamp": 7918,
+      "lane": 0
+    },
+    {
+      "timestamp": 7918,
+      "lane": 2
+    },
+    {
+      "timestamp": 8126,
+      "lane": 1
+    },
+    {
+      "timestamp": 8614,
+      "lane": 3
+    },
+    {
+      "timestamp": 8614,
+      "lane": 4
+    },
+    {
+      "timestamp": 8614,
+      "lane": 5
+    },
+    {
+      "timestamp": 8962,
+      "lane": 0
+    },
+    {
+      "timestamp": 9079,
+      "lane": 2
     }
   ]
 }
