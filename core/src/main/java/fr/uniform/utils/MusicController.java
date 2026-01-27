@@ -70,6 +70,7 @@ public class MusicController {
 
             int timestamp = jsonObject.get("timestamp").getAsInt();
             int laneIndex = jsonObject.get("lane").getAsInt();
+            int time_press = jsonObject.get("time_press").getAsInt();
 
 
             Lane selectedLane = null;
@@ -79,7 +80,7 @@ public class MusicController {
                 System.err.println("ERREUR CRITIQUE : Lane index " + laneIndex + " invalide dans le JSON.");
             }
 
-            return new Note(selectedLane, timestamp);
+            return new Note(selectedLane, timestamp,time_press);
         }
     }
 
@@ -87,8 +88,8 @@ public class MusicController {
         if (!currentNotes.isEmpty()) {
             for (Note note : currentNotes) {
 
-                note.block = new Block(note.lane.x,calculerY(delaTime,note.timestamp,gameEnvironnement.block_vitesse_pixel_per_ms), Texture_File.TEXTURE_BLOCK_WIDTH,Texture_File.TEXTURE_BLOCK_HEIGHT,true, gameEnvironnement.block_vitesse_pixel_per_frame,Texture_File.BLOCK_DEFAULT,note.lane);
-                Block block = Block.spawnBlock(note.lane,gameEnvironnement,(int)note.block.y);
+                note.block = new Block(note.lane.x,calculerY(delaTime,note.timestamp,gameEnvironnement.vitesse_actuelle_pixel_per_ms), Texture_File.TEXTURE_BLOCK_DEFAULT_WIDTH,Texture_File.TEXTURE_BLOCK_DEFAULT_HEIGHT,Texture_File.TEXTURE_BLOCK_PRESS_WIDTH,note.calculateHeight(gameEnvironnement.block_vitesse_pixel_per_ms),note.time_press, true,gameEnvironnement.block_vitesse_pixel_per_frame,Texture_File.BLOCK_DEFAULT,Texture_File.BLOCK_TURBO,Texture_File.BLOCK_PRESS, note.lane);
+                Block block = Block.spawnBlock(note.lane,gameEnvironnement,(int)note.block.y,note);
                 note.lane.blocks.add(block);
 
             }
@@ -100,4 +101,5 @@ public class MusicController {
 
         return (int) ( y_cible + (timestamp- delta) * vitesse);
     }
+
 }

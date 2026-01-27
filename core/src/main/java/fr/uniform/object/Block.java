@@ -2,6 +2,7 @@ package fr.uniform.object;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import fr.uniform.GameEnvironnement;
 import fr.uniform.Texture_File;
@@ -15,30 +16,50 @@ public class Block {
     public boolean visible;
     public boolean fallen;
     public float vitesse;
-    public Texture texture;
-    public Sprite sprite;
+    public Texture texture_base;
+    public Texture texture_turbo;
+    public Texture texture_press;
+    public Sprite sprite_default;
+    public Sprite sprite_turbo;
+    public Sprite sprite_press;
     public Rectangle collision;
     private final Lane lane;
     private static float taille_collision_reduce;
-    public boolean pass;
+    public boolean pass_clicked;
+    public int press_width;
+    public int press_height;
+    public int press_time;
     //private boolean touched = false; Debug jusqu'ou le block peut toucher le button
 
 
-    public Block(int x, float y, int width, int height, boolean fallen, float vitesse, Texture texture, Lane lane) {
+    public Block(int x, float y, int width, int height, int press_width, int press_height, int press_time,boolean fallen, float vitesse, Texture texture_base,Texture texture_turbo,Texture texture_press, Lane lane) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+        this.press_width = press_width;
+        this.press_height = press_height;
+        this.press_time = press_time;
         this.visible = true;
         this.fallen = fallen;
         this.vitesse = vitesse;
-        this.texture = texture;
-        this.sprite = new Sprite(texture);
+        this.texture_base = texture_base;
+        this.texture_turbo = texture_turbo;
+        this.texture_press = texture_press;
+        this.sprite_default = new Sprite(this.texture_base);
+        this.sprite_turbo = new Sprite(this.texture_turbo);
+        this.sprite_press = new Sprite(this.texture_press);
         this.lane = lane;
-        sprite.setSize(width, height);
-        sprite.setPosition(x, y);
-        sprite.setAlpha(Texture_File.TEXTURE_OPACITY);
-        this.pass = false;
+        sprite_default.setSize(width, height);
+        sprite_default.setPosition(x, y);
+        sprite_default.setAlpha(Texture_File.TEXTURE_OPACITY);
+        sprite_turbo.setSize(Texture_File.TEXTURE_BLOCK_TURBO_WIDTH, Texture_File.TEXTURE_BLOCK_TURBO_HEIGHT);
+        sprite_turbo.setPosition(x, y);
+        sprite_turbo.setAlpha(0);
+        sprite_press.setPosition(x, y);
+        TextureRegion hautDuSprite = new TextureRegion(texture_press, 0, 0, texture_press.getWidth(), press_height);
+        sprite_press.setRegion(hautDuSprite);
+        this.pass_clicked = false;
 
         taille_collision_reduce = 0;
         collision = new Rectangle(x, y, (float) width, (float) height - taille_collision_reduce);
@@ -50,9 +71,13 @@ public class Block {
         this.collision.setPosition(this.x, this.y+taille_collision_reduce);
 
         if(this.lane.assignedButton.clicked){
+
             if(this.collision.overlaps(this.lane.assignedButton.collision)){
+
+                pass_clicked = true;
+
                 destroy();
-                pass = true;
+
                 gameEnvironnement.ComboManager(true);
                 return true;
             }else{
@@ -69,11 +94,11 @@ public class Block {
     }
 
 
-    public static Block spawnBlock(Lane lane, GameEnvironnement gameEnvironnement,int y){
+    public static Block spawnBlock(Lane lane, GameEnvironnement gameEnvironnement,int y,Note note){
 
         if(lane.playabled){
-            return new Block(lane.x-((Texture_File.TEXTURE_BLOCK_WIDTH - Texture_File.TEXTURE_LANE_WIDTH)/2)
-                ,y,Texture_File.TEXTURE_BLOCK_WIDTH,Texture_File.TEXTURE_BUTTON_HEIGHT,true, gameEnvironnement.block_vitesse_pixel_per_frame,(gameEnvironnement.turbo) ? Texture_File.BLOCK_DEFAULT : Texture_File.BLOCK_TURBO,lane);
+            return new Block(lane.x-((Texture_File.TEXTURE_BLOCK_DEFAULT_HEIGHT - Texture_File.TEXTURE_LANE_WIDTH)/2)
+                ,y,Texture_File.TEXTURE_BLOCK_DEFAULT_WIDTH,Texture_File.TEXTURE_BUTTON_HEIGHT,Texture_File.TEXTURE_BLOCK_PRESS_WIDTH,note.calculateHeight(gameEnvironnement.vitesse_actuelle_pixel_per_ms),note.time_press,true, gameEnvironnement.vitesse_actuelle_pixel_per_frame,Texture_File.BLOCK_DEFAULT, Texture_File.BLOCK_TURBO,Texture_File.BLOCK_PRESS,lane);
         }
         return null;
     }
@@ -87,16 +112,32 @@ public class Block {
     }
 
     public void move(GameEnvironnement gameEnvironnement){
-
+        turbo(gameEnvironnement);
         if (this.visible && this.fallen) {
 
             this.y = this.y - this.vitesse;
-            this.sprite.setY(this.y);
+            this.sprite_default.setY(this.y);
+            this.sprite_press.setY(this.y);
 
-            if (this.sprite.getY() < -this.height) {
+            if (this.sprite_default.getY() < -this.height) {
                 this.visible = false;
                 gameEnvironnement.ComboManager(false);
             }
+        }
+    }
+
+    public void updateVitesse(float vitesse){
+        this.vitesse = vitesse;
+    }
+
+    public void turbo(GameEnvironnement gameEnvironnement){
+        if(gameEnvironnement.turbo){
+            sprite_turbo.setPosition(this.x, this.y);
+            sprite_turbo.setAlpha(Texture_File.TEXTURE_OPACITY_TURBO);
+
+        }else {
+            sprite_turbo.setPosition(this.x, this.y);
+            sprite_turbo.setAlpha(0);
         }
     }
 

@@ -12,8 +12,10 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import fr.uniform.object.*;
+import fr.uniform.utils.ComboController;
 import fr.uniform.utils.InputController;
 import fr.uniform.utils.MusicController;
+import fr.uniform.utils.VibrationObject;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -45,6 +47,9 @@ public class Main extends Game {
     private ErrorIndiquator errorIndiquator;
     private PasseIndiquator passeIndiquator;
 
+    //ComboController
+    private ComboController comboController;
+
     //blocks
 
     //button
@@ -65,20 +70,23 @@ public class Main extends Game {
     private Lane lane_h;
     private Lane lane_j;
     private Lane lane_k;
-
+    private float vitesse;
+    private float vitesse_turbo;
     int count_block_passe = 0;
 
     @Override
     public void create() {
 
-
+        vitesse = 10;
+        vitesse_turbo = 10;
         //Indiquator
+        comboController = new ComboController(100,700);
         errorIndiquator = new ErrorIndiquator(1700,800,
             Texture_File.ERROR_INDIQUATOR_WIDTH,Texture_File.ERROR_INDIQUATOR_HEIGHT,Texture_File.ERROR_INDIQUATOR);
-        passeIndiquator = new PasseIndiquator(100,800,
+        passeIndiquator = new PasseIndiquator(100,400,
             Texture_File.PASS_INDIQUATOR_WIDTH,Texture_File.PASS_INDIQUATOR_HEIGHT,Texture_File.PASS_INDIQUATOR);
         //Game variable set
-        gameEnvironnement = new GameEnvironnement(4,200,errorIndiquator,passeIndiquator);
+        gameEnvironnement = new GameEnvironnement(vitesse,vitesse_turbo,200,errorIndiquator,passeIndiquator, comboController);
 
 
         setScreen(new FirstScreen());
@@ -103,13 +111,12 @@ public class Main extends Game {
         //Button Creation
         buttons = new ArrayList<>();
 
-        button_f = new Button(lane_f.x-((Texture_File.TEXTURE_BUTTON_WIDTH - Texture_File.TEXTURE_LANE_WIDTH)/2)
-            ,lane_f.y-Texture_File.TEXTURE_BUTTON_HEIGHT,Texture_File.TEXTURE_BUTTON_WIDTH,Texture_File.TEXTURE_BUTTON_HEIGHT,Texture_File.BUTTON_F_UNPRESS,Texture_File.BUTTON_F_PRESS);
-        buttons.add(button_f);
-
         button_d = new Button(lane_d.x-((Texture_File.TEXTURE_BUTTON_WIDTH - Texture_File.TEXTURE_LANE_WIDTH)/2)
             ,lane_d.y-Texture_File.TEXTURE_BUTTON_HEIGHT,Texture_File.TEXTURE_BUTTON_WIDTH,Texture_File.TEXTURE_BUTTON_HEIGHT,Texture_File.BUTTON_D_UNPRESS,Texture_File.BUTTON_D_PRESS);
         buttons.add(button_d);
+        button_f = new Button(lane_f.x-((Texture_File.TEXTURE_BUTTON_WIDTH - Texture_File.TEXTURE_LANE_WIDTH)/2)
+            ,lane_f.y-Texture_File.TEXTURE_BUTTON_HEIGHT,Texture_File.TEXTURE_BUTTON_WIDTH,Texture_File.TEXTURE_BUTTON_HEIGHT,Texture_File.BUTTON_F_UNPRESS,Texture_File.BUTTON_F_PRESS);
+        buttons.add(button_f);
         button_g = new Button(lane_g.x-((Texture_File.TEXTURE_BUTTON_WIDTH - Texture_File.TEXTURE_LANE_WIDTH)/2)
             ,lane_g.y-Texture_File.TEXTURE_BUTTON_HEIGHT,Texture_File.TEXTURE_BUTTON_WIDTH,Texture_File.TEXTURE_BUTTON_HEIGHT,Texture_File.BUTTON_G_UNPRESS,Texture_File.BUTTON_G_PRESS);
         buttons.add(button_g);
@@ -123,10 +130,11 @@ public class Main extends Game {
             ,lane_k.y-Texture_File.TEXTURE_BUTTON_HEIGHT,Texture_File.TEXTURE_BUTTON_WIDTH,Texture_File.TEXTURE_BUTTON_HEIGHT,Texture_File.BUTTON_K_UNPRESS,Texture_File.BUTTON_K_PRESS);
         buttons.add(button_k);
 
-        lane_f.assignedButton = button_f;
-        lanes.add(lane_f);
+
         lane_d.assignedButton = button_d;
         lanes.add(lane_d);
+        lane_f.assignedButton = button_f;
+        lanes.add(lane_f);
         lane_g.assignedButton = button_g;
         lanes.add(lane_g);
         lane_h.assignedButton = button_h;
@@ -135,7 +143,6 @@ public class Main extends Game {
         lanes.add(lane_j);
         lane_k.assignedButton = button_k;
         lanes.add(lane_k);
-
 
         musicController = new MusicController(lanes,gameEnvironnement);
         musicController.loadMusicData("level_data.json");
@@ -161,8 +168,8 @@ public class Main extends Game {
     private void logic() {
 
         float delta = Gdx.graphics.getDeltaTime();
-        button_f.timer += delta;
         button_d.timer += delta;
+        button_f.timer += delta;
         button_g.timer += delta;
         button_h.timer += delta;
         button_j.timer += delta;
@@ -173,8 +180,8 @@ public class Main extends Game {
             List<Block> blocks = lane.blocks;
 
             for (Block block : blocks) {
-
                 block.move(gameEnvironnement);
+                VibrationObject.VibrateBlock(block);
             }
         }
         /*
@@ -219,7 +226,11 @@ public class Main extends Game {
 
                 if (block.visible) {
                     //Regle opacite du block a Texture_File.TEXTURE_OPACITY
-                    block.sprite.draw(batch);
+                    block.sprite_press.draw(batch);
+                    block.sprite_default.draw(batch);
+                    if (gameEnvironnement.turbo){
+                        block.sprite_turbo.draw(batch);
+                    }
 
                 }
             }
@@ -233,7 +244,18 @@ public class Main extends Game {
             passeIndiquator.sprite.draw(batch);
         }
 
-        batch.end();
-    }
+        //render Combo
+        if (comboController.comboIndiquatorCroix.visible) {
+            comboController.comboIndiquatorCroix.sprite.draw(batch);
+        }
+        if (comboController.comboIndiquatorPremier.visible) {
+            comboController.comboIndiquatorPremier.sprite.draw(batch);
+        }
+        if (comboController.comboIndiquatorDeuxieme.visible) {
+            comboController.comboIndiquatorDeuxieme.sprite.draw(batch);
+        }
 
+        batch.end();
+
+    }
 }

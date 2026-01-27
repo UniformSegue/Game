@@ -26,23 +26,23 @@ public class InputController extends InputAdapter {
     @Override
     public boolean keyDown(int keycode) {
 
-        if (keycode == Input.Keys.F) {
-
-            Button button_f = buttons.get(0);
-            button_f.clicked();
-            checkButton(lanes.get(0),button_f);
-
-
-            return true;
-        }
         if (keycode == Input.Keys.D) {
 
-            Button button_d = buttons.get(1);
+            Button button_d = buttons.get(0);
             button_d.clicked();
-            checkButton(lanes.get(1),button_d);
+            checkButton(lanes.get(0),button_d);
 
             return true;
         }
+        if (keycode == Input.Keys.F) {
+
+            Button button_f = buttons.get(1);
+            button_f.clicked();
+            checkButton(lanes.get(1),button_f);
+
+            return true;
+        }
+
         if (keycode == Input.Keys.G) {
 
             Button button_g = buttons.get(2);
@@ -75,21 +75,27 @@ public class InputController extends InputAdapter {
 
             return true;
         }
+        if (keycode == Input.Keys.T) {
+
+            gameEnvironnement.startTurbo();
+            return true;
+        }
         return false;
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        if (keycode == Input.Keys.F) {
-            Button button_f = buttons.get(0);
-            button_f.unclicked();
-            return true;
-        }
         if (keycode == Input.Keys.D) {
-            Button button_d = buttons.get(1);
+            Button button_d = buttons.get(0);
             button_d.unclicked();
             return true;
         }
+        if (keycode == Input.Keys.F) {
+            Button button_f = buttons.get(1);
+            button_f.unclicked();
+            return true;
+        }
+
         if (keycode == Input.Keys.G) {
             Button button_g = buttons.get(2);
             button_g.unclicked();
@@ -110,6 +116,7 @@ public class InputController extends InputAdapter {
             button_k.unclicked();
             return true;
         }
+
         return false;
     }
 
@@ -141,8 +148,8 @@ public class InputController extends InputAdapter {
 
             if (block.visible && block.fallen) {
 
-                if (block.sprite.getY() < lowestY) {
-                    lowestY = block.sprite.getY();
+                if (block.sprite_default.getY() < lowestY) {
+                    lowestY = block.sprite_default.getY();
                     lowest = block;
                 }
             }

@@ -7,6 +7,14 @@ public interface Texture_File {
     //multiplicateur taille texture
     int multiplicateur_texture = 5; // 5
 
+    //Combo Indiquator
+    int COMBO_WIDTH_BASE = 16;
+    int COMBO_HEIGHT_BASE = 16;
+    int COMBO_WIDTH_TEXTURE = COMBO_WIDTH_BASE*multiplicateur_texture;
+    int COMBO_HEIGHT_TEXTURE = COMBO_HEIGHT_BASE*multiplicateur_texture;
+
+    Texture COMBO_ALL_NUMBERS = new Texture("all_number.png");
+
     //Error Indiquator
     Texture ERROR_INDIQUATOR = new Texture(Gdx.files.internal("failed.png"));
     Texture PASS_INDIQUATOR = new Texture(Gdx.files.internal("pass.png"));
@@ -16,12 +24,18 @@ public interface Texture_File {
     int PASS_INDIQUATOR_HEIGHT = 32*multiplicateur_texture;
 
     //Texture Block
-    int TEXTURE_BLOCK_WIDTH = 32*multiplicateur_texture;
-    int TEXTURE_BLOCK_HEIGHT = 32*multiplicateur_texture;
-    float TEXTURE_OPACITY = 0.3f;
+    int TEXTURE_BLOCK_DEFAULT_WIDTH = 32*multiplicateur_texture;
+    int TEXTURE_BLOCK_DEFAULT_HEIGHT = 32*multiplicateur_texture;
+    int TEXTURE_BLOCK_TURBO_WIDTH = 32*multiplicateur_texture;
+    int TEXTURE_BLOCK_TURBO_HEIGHT = 64*multiplicateur_texture;
+    float TEXTURE_OPACITY = 0.6f;
+    float TEXTURE_OPACITY_TURBO = 0.3f;
+    int TEXTURE_BLOCK_PRESS_WIDTH = 2*multiplicateur_texture;
+    Texture BLOCK_PRESS = new Texture(Gdx.files.internal("lane.png"));
+
 
     Texture BLOCK_DEFAULT = new Texture(Gdx.files.internal("block_default.png"));
-    Texture BLOCK_TURBO = new Texture(Gdx.files.internal("block_default.png"));
+    Texture BLOCK_TURBO = new Texture(Gdx.files.internal("block_turbo.png"));
 
 
     //button
@@ -46,7 +60,7 @@ public interface Texture_File {
     int multiplicateur_texture_lane = 15; // 15
 
     int TEXTURE_LANE_WIDTH = 2*multiplicateur_texture_lane;
-    int TEXTURE_LANE_HEIGHT = 64*multiplicateur_texture_lane;
+    int TEXTURE_LANE_HEIGHT = 256*multiplicateur_texture_lane;
 
     Texture LANE_DEFAULT = new Texture(Gdx.files.internal("lane.png"));
 
