@@ -5,5 +5,5 @@ Ce projet a été réalisé dans le cadre de la deuxième année du cycle prépa
 ### Auteurs
 [@Maxence Roger](https://github.com/UniformSegue)
 
-Felix Lataste
+[Felix Lataste](https://github.com/Feulixlatasse)
 
