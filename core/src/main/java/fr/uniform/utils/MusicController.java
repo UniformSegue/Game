@@ -88,7 +88,7 @@ public class MusicController {
         if (!currentNotes.isEmpty()) {
             for (Note note : currentNotes) {
 
-                note.block = new Block(note.lane.x,calculerY(delaTime,note.timestamp,gameEnvironnement.vitesse_actuelle_pixel_per_ms), Texture_File.TEXTURE_BLOCK_DEFAULT_WIDTH,Texture_File.TEXTURE_BLOCK_DEFAULT_HEIGHT,Texture_File.TEXTURE_BLOCK_PRESS_WIDTH,note.calculateHeight(gameEnvironnement.block_vitesse_pixel_per_ms),note.time_press, true,gameEnvironnement.block_vitesse_pixel_per_frame,Texture_File.BLOCK_DEFAULT,Texture_File.BLOCK_TURBO,Texture_File.BLOCK_PRESS, note.lane);
+                note.block = new Block(note.lane.x,calculerY(delaTime,note.timestamp,gameEnvironnement.vitesse_actuelle_pixel_per_ms), Texture_File.TEXTURE_BLOCK_DEFAULT_WIDTH,Texture_File.TEXTURE_BLOCK_DEFAULT_HEIGHT,note.time_press, true,gameEnvironnement.block_vitesse_pixel_per_frame,Texture_File.BLOCK_DEFAULT,Texture_File.BLOCK_TURBO,Texture_File.BLOCK_PRESS, note.lane);
                 Block block = Block.spawnBlock(note.lane,gameEnvironnement,(int)note.block.y,note);
                 note.lane.blocks.add(block);
 

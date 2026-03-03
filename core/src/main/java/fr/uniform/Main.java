@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
@@ -60,6 +61,7 @@ public class Main extends Game {
     private Button button_h;
     private Button button_j;
     private Button button_k;
+    private Button button_souffle;
 
 
     //lanes
@@ -77,11 +79,11 @@ public class Main extends Game {
     @Override
     public void create() {
 
-        vitesse = 10;
+        vitesse = 5;
         vitesse_turbo = 10;
         //Indiquator
-        comboController = new ComboController(100,700);
-        errorIndiquator = new ErrorIndiquator(1700,800,
+        comboController = new ComboController(100,600);
+        errorIndiquator = new ErrorIndiquator(1700,600,
             Texture_File.ERROR_INDIQUATOR_WIDTH,Texture_File.ERROR_INDIQUATOR_HEIGHT,Texture_File.ERROR_INDIQUATOR);
         passeIndiquator = new PasseIndiquator(100,400,
             Texture_File.PASS_INDIQUATOR_WIDTH,Texture_File.PASS_INDIQUATOR_HEIGHT,Texture_File.PASS_INDIQUATOR);
@@ -89,7 +91,7 @@ public class Main extends Game {
         gameEnvironnement = new GameEnvironnement(vitesse,vitesse_turbo,200,errorIndiquator,passeIndiquator, comboController);
 
 
-        setScreen(new FirstScreen());
+        //setScreen(new FirstScreen());
         //testRectangle = new Rectangle();
         //viewport = new FitViewport(8, 5);
         shapeRenderer = new ShapeRenderer();
@@ -129,7 +131,9 @@ public class Main extends Game {
         button_k = new Button(lane_k.x-((Texture_File.TEXTURE_BUTTON_WIDTH - Texture_File.TEXTURE_LANE_WIDTH)/2)
             ,lane_k.y-Texture_File.TEXTURE_BUTTON_HEIGHT,Texture_File.TEXTURE_BUTTON_WIDTH,Texture_File.TEXTURE_BUTTON_HEIGHT,Texture_File.BUTTON_K_UNPRESS,Texture_File.BUTTON_K_PRESS);
         buttons.add(button_k);
-
+        button_souffle = new Button(2000,2000,Texture_File.TEXTURE_BUTTON_WIDTH,Texture_File.TEXTURE_BUTTON_HEIGHT,Texture_File.BUTTON_K_UNPRESS,Texture_File.BUTTON_K_PRESS);
+        buttons.add(button_souffle);
+        gameEnvironnement.setButtons(buttons);
 
         lane_d.assignedButton = button_d;
         lanes.add(lane_d);
@@ -255,6 +259,13 @@ public class Main extends Game {
             comboController.comboIndiquatorDeuxieme.sprite.draw(batch);
         }
 
+        //Render Logo Ensim
+        Sprite ensimLogo = new Sprite(new Texture(Gdx.files.internal("ensim_withoutbg.png")));
+        int width_ensim = 387;
+        int height_ensim = 162;
+        ensimLogo.setSize(width_ensim,height_ensim);
+        ensimLogo.setPosition(1920-width_ensim,1080-height_ensim-50);
+        ensimLogo.draw(batch);
         batch.end();
 
     }

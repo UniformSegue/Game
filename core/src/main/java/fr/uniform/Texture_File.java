@@ -31,7 +31,7 @@ public interface Texture_File {
     float TEXTURE_OPACITY = 0.6f;
     float TEXTURE_OPACITY_TURBO = 0.3f;
     int TEXTURE_BLOCK_PRESS_WIDTH = 2*multiplicateur_texture;
-    Texture BLOCK_PRESS = new Texture(Gdx.files.internal("lane.png"));
+    Texture BLOCK_PRESS = new Texture(Gdx.files.internal("continuenote.png"));
 
 
     Texture BLOCK_DEFAULT = new Texture(Gdx.files.internal("block_default.png"));

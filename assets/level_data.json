@@ -1,35 +1,60 @@
 {
   "audioFile": "test_sound_kick_1s.wav",
   "notes": [
-    { "timestamp": 1000, "lane": 0, "time_press": 500 },
-    { "timestamp": 2000, "lane": 1, "time_press": 500 },
-    { "timestamp": 3000, "lane": 2, "time_press": 500 },
-    { "timestamp": 4000, "lane": 3, "time_press": 500 },
-    { "timestamp": 5000, "lane": 4, "time_press": 500 },
-    { "timestamp": 6000, "lane": 5, "time_press": 500 },
-    { "timestamp": 7000, "lane": 0, "time_press": 500 },
-    { "timestamp": 8000, "lane": 1, "time_press": 500 },
-    { "timestamp": 9000, "lane": 2, "time_press": 500 },
-    { "timestamp": 10000, "lane": 3, "time_press": 500 },
-    { "timestamp": 11000, "lane": 4, "time_press": 500 },
-    { "timestamp": 12000, "lane": 5, "time_press": 500 },
-    { "timestamp": 13000, "lane": 0, "time_press": 500 },
-    { "timestamp": 14000, "lane": 1, "time_press": 500 },
-    { "timestamp": 15000, "lane": 2, "time_press": 500 },
-    { "timestamp": 16000, "lane": 3, "time_press": 500 },
-    { "timestamp": 17000, "lane": 4, "time_press": 500 },
-    { "timestamp": 18000, "lane": 5, "time_press": 500 },
-    { "timestamp": 19000, "lane": 0, "time_press": 500 },
-    { "timestamp": 20000, "lane": 1, "time_press": 500 },
-    { "timestamp": 21000, "lane": 2, "time_press": 500 },
-    { "timestamp": 22000, "lane": 3, "time_press": 500 },
-    { "timestamp": 23000, "lane": 4, "time_press": 500 },
-    { "timestamp": 24000, "lane": 5, "time_press": 500 },
-    { "timestamp": 25000, "lane": 0, "time_press": 500 },
-    { "timestamp": 26000, "lane": 1, "time_press": 500 },
-    { "timestamp": 27000, "lane": 2, "time_press": 500 },
-    { "timestamp": 28000, "lane": 3, "time_press": 500 },
-    { "timestamp": 29000, "lane": 4, "time_press": 500 },
-    { "timestamp": 30000, "lane": 5, "time_press": 500 }
+    {
+      "timestamp": 0,
+      "lane": 0,
+      "time_press": 500
+    },
+    {
+      "timestamp": 1000,
+      "lane": 1,
+      "time_press": 1000
+    },
+    {
+      "timestamp": 2000,
+      "lane": 2,
+      "time_press": 1000
+    },
+    {
+      "timestamp": 3000,
+      "lane": 3,
+      "time_press": 1000
+    },
+    {
+      "timestamp": 4000,
+      "lane": 4,
+      "time_press": 1000
+    },
+    {
+      "timestamp": 5000,
+      "lane": 5,
+      "time_press": 1000
+    },
+    {
+      "timestamp": 6000,
+      "lane": 0,
+      "time_press": 1000
+    },
+    {
+      "timestamp": 7000,
+      "lane": 1,
+      "time_press": 1000
+    },
+    {
+      "timestamp": 8000,
+      "lane": 2,
+      "time_press": 1000
+    },
+    {
+      "timestamp": 9000,
+      "lane": 3,
+      "time_press": 1000
+    },
+    {
+      "timestamp": 10000,
+      "lane": 4,
+      "time_press": 1000
+    }
   ]
 }

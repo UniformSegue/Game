@@ -16,19 +16,43 @@ public class InputController extends InputAdapter {
     private List<Button> buttons;
     private GameEnvironnement gameEnvironnement;
     private List<Lane> lanes;
+    private Button button_d;
+    private Button button_f;
+    private Button button_g;
+    private Button button_h;
+    private Button button_j;
+    private Button button_k;
+    private Button button_souffle;
 
     public InputController(List<Button> buttons, GameEnvironnement gameEnvironnement, List<Lane> lanes) {
         this.buttons = buttons;
         this.gameEnvironnement = gameEnvironnement;
         this.lanes = lanes;
+        button_d = buttons.get(0);
+        button_f = buttons.get(1);
+        button_g = buttons.get(2);
+        button_h = buttons.get(3);
+        button_j = buttons.get(4);
+        button_k = buttons.get(5);
+        button_souffle = buttons.get(6);
     }
 
     @Override
     public boolean keyDown(int keycode) {
 
+        if (keycode == Input.Keys.Q) {
+
+            button_souffle.clicked();
+            return true;
+        }
+
+        if (gameEnvironnement != null) {
+            if(!gameEnvironnement.checkSouffle()){
+                return false;
+            }
+        }
         if (keycode == Input.Keys.D) {
 
-            Button button_d = buttons.get(0);
             button_d.clicked();
             checkButton(lanes.get(0),button_d);
 
@@ -36,7 +60,6 @@ public class InputController extends InputAdapter {
         }
         if (keycode == Input.Keys.F) {
 
-            Button button_f = buttons.get(1);
             button_f.clicked();
             checkButton(lanes.get(1),button_f);
 
@@ -45,7 +68,6 @@ public class InputController extends InputAdapter {
 
         if (keycode == Input.Keys.G) {
 
-            Button button_g = buttons.get(2);
             button_g.clicked();
             checkButton(lanes.get(2),button_g);
 
@@ -53,15 +75,12 @@ public class InputController extends InputAdapter {
         }
         if (keycode == Input.Keys.H) {
 
-            Button button_h = buttons.get(3);
             button_h.clicked();
             checkButton(lanes.get(3),button_h);
 
             return true;
         }
         if (keycode == Input.Keys.J) {
-
-            Button button_j = buttons.get(4);
             button_j.clicked();
             checkButton(lanes.get(4),button_j);
 
@@ -69,14 +88,15 @@ public class InputController extends InputAdapter {
         }
         if (keycode == Input.Keys.K) {
 
-            Button button_k = buttons.get(5);
             button_k.clicked();
             checkButton(lanes.get(5),button_k);
 
             return true;
         }
+
         if (keycode == Input.Keys.T) {
 
+            assert gameEnvironnement != null;
             gameEnvironnement.startTurbo();
             return true;
         }
@@ -85,37 +105,39 @@ public class InputController extends InputAdapter {
 
     @Override
     public boolean keyUp(int keycode) {
+        if (keycode == Input.Keys.Q) {
+            button_souffle.unclicked();
+            return true;
+        }
+
+
+
         if (keycode == Input.Keys.D) {
-            Button button_d = buttons.get(0);
             button_d.unclicked();
             return true;
         }
         if (keycode == Input.Keys.F) {
-            Button button_f = buttons.get(1);
             button_f.unclicked();
             return true;
         }
 
         if (keycode == Input.Keys.G) {
-            Button button_g = buttons.get(2);
             button_g.unclicked();
             return true;
         }
         if (keycode == Input.Keys.H) {
-            Button button_h = buttons.get(3);
             button_h.unclicked();
             return true;
         }
         if (keycode == Input.Keys.J) {
-            Button button_j = buttons.get(4);
             button_j.unclicked();
             return true;
         }
         if (keycode == Input.Keys.K) {
-            Button button_k = buttons.get(5);
             button_k.unclicked();
             return true;
         }
+
 
         return false;
     }

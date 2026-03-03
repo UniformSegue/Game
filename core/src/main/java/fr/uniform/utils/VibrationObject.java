@@ -12,12 +12,6 @@ public class VibrationObject {
         r.setSeed(System.currentTimeMillis());
         float value_vibrate_x = r.nextFloat()*10;
 
-        block.sprite_press.translateX(value_vibrate_x);
-        block.sprite_turbo.translateX(value_vibrate_x);
-        block.sprite_default.translateX(value_vibrate_x);
-        block.sprite_press.translateX(-value_vibrate_x);
-        block.sprite_turbo.translateX(-value_vibrate_x);
-        block.sprite_default.translateX(-value_vibrate_x);
 
     }
 }

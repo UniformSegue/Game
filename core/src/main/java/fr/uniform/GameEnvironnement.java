@@ -24,11 +24,16 @@ public class GameEnvironnement {
     public float timer_button_f;
     public float timer_button_d;
     public int hauter_y_line;
+    public boolean souffleActive;
 
     private ErrorIndiquator errorIndiquator;
     private PasseIndiquator passeIndiquator;
     ComboController comboController;
     public List<Button> buttons;
+
+    public void setButtons(List<Button> buttons) {
+        this.buttons = buttons;
+    }
 
     public GameEnvironnement(float vitesse, float vitesse_turbo, int hauter_y_line, ErrorIndiquator errorIndiquator, PasseIndiquator passeIndiquator, ComboController comboController) {
         this.turbo = false;
@@ -42,6 +47,9 @@ public class GameEnvironnement {
         this.passeIndiquator = passeIndiquator;
         this.comboController = comboController;
         this.hauter_y_line = hauter_y_line;
+        this.souffleActive = false;
+
+
         comboController.setIndiquator();
 
     }
@@ -77,5 +85,8 @@ public class GameEnvironnement {
     }
 
 
+    public boolean checkSouffle() {
+        return buttons.get(6).clicked;
+    }
 
 }
