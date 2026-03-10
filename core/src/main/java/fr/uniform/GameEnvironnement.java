@@ -31,6 +31,7 @@ public class GameEnvironnement {
     ComboController comboController;
     public List<Button> buttons;
 
+
     public void setButtons(List<Button> buttons) {
         this.buttons = buttons;
     }
@@ -49,12 +50,13 @@ public class GameEnvironnement {
         this.hauter_y_line = hauter_y_line;
         this.souffleActive = false;
 
-
         comboController.setIndiquator();
 
     }
 
-    public void ComboManager(boolean resultClicked) {
+    public void ComboManager(boolean resultClicked, Block block) {
+
+        System.out.println(block);
 
         if(resultClicked) {
             combo++;

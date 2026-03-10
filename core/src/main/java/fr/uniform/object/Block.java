@@ -22,12 +22,16 @@ public class Block {
     public Sprite sprite_default;
     public Sprite sprite_turbo;
     public Sprite sprite_press;
-    public Rectangle collision;
+    public Rectangle collision_base;
+    public Rectangle collision_up;
     private final Lane lane;
     private static float taille_collision_reduce;
     public boolean pass_clicked;
     public float press_height;
     public int press_time;
+    private boolean clicked_base;
+    public boolean pass_combo;
+
     //private boolean touched = false; Debug jusqu'ou le block peut toucher le button
 
 
@@ -57,38 +61,61 @@ public class Block {
         sprite_press.setSize(width, 1);
         sprite_press.setAlpha(Texture_File.TEXTURE_OPACITY);
         this.pass_clicked = false;
+        pass_combo = false;
 
 
         taille_collision_reduce = 0;
-        collision = new Rectangle(x, y, (float) width, (float) height - taille_collision_reduce);
+        collision_base = new Rectangle(x, y, (float) width, (float) height - taille_collision_reduce);
+        collision_up = new Rectangle(x, y, (float) width, (float) 1);
 
+
+        clicked_base = false;
     }
 
-    public boolean checkBlockClicked(GameEnvironnement gameEnvironnement) {
+    public void checkBlockClicked(GameEnvironnement gameEnvironnement) {
+        if (!visible || pass_combo) return;
+        this.collision_base.setPosition(this.x, this.y+taille_collision_reduce);
+        this.collision_up.setPosition(this.x, this.y+press_height+100);
 
-        this.collision.setPosition(this.x, this.y+taille_collision_reduce);
+        if(this.press_time > 0) {
+            if(!clicked_base) {
+                if (this.lane.assignedButton.clicked) {
+                    if (this.collision_base.overlaps(this.lane.assignedButton.collision)) {
 
-        if(this.lane.assignedButton.clicked){
+                        clicked_base = true;
+                    }
+                }
+            }
+            if (clicked_base) {
+                if (this.lane.assignedButton.clicked) {
+                    if (this.collision_up.overlaps(this.lane.assignedButton.collision)) {
+                        if (this.visible){
+                            destroy(true,gameEnvironnement);
+                        }
 
-            if(this.collision.overlaps(this.lane.assignedButton.collision)){
-
-                pass_clicked = true;
-
-                destroy();
-
-                gameEnvironnement.ComboManager(true);
-                return true;
-            }else{
-                gameEnvironnement.ComboManager(false);
-                return false;
+                    }
+                }
             }
         }
+        //pour block press_time = 0
+        if(this.press_time == 0) {
+
+            if (this.lane.assignedButton.clicked) {
+
+                if (this.collision_base.overlaps(this.lane.assignedButton.collision)) {
+                    pass_clicked = true;
+                    destroy(true,gameEnvironnement);
+
+                }
+            }
+        }
+
 
         /* Debug jusqu'ou le block peut toucher le button
         if(touched && !this.collision.overlaps(this.lane.assignedButton.collision)){
             fallen = false;
         }*/
-        return false;
+
     }
 
 
@@ -103,8 +130,12 @@ public class Block {
         return null;
     }
 
-    public void destroy(){
-
+    public void destroy(boolean status, GameEnvironnement gameEnvironnement) {
+        if (pass_combo) return;
+        if(visible){
+            gameEnvironnement.ComboManager(status,this);
+            pass_combo = true;
+        }
         visible = false;
         fallen = false;
         vitesse = 0;
@@ -112,6 +143,8 @@ public class Block {
     }
 
     public void move(GameEnvironnement gameEnvironnement){
+        if(!this.visible){return;}
+        checkBlockClicked(gameEnvironnement);
         turbo(gameEnvironnement);
         if (this.visible && this.fallen) {
 
@@ -119,9 +152,13 @@ public class Block {
             this.sprite_default.setY(this.y);
             this.sprite_press.setY(this.y+height);
 
-            if (this.sprite_default.getY() < -this.height) {
+            if (this.sprite_default.getY() < -100 && !this.clicked_base ) { //-this.height
                 this.visible = false;
-                gameEnvironnement.ComboManager(false);
+                gameEnvironnement.ComboManager(false,this);
+            }
+            if (this.sprite_press.getY() < -press_height && this.clicked_base ) {
+                this.visible = false;
+                gameEnvironnement.ComboManager(false,this);
             }
         }
     }
@@ -142,9 +179,9 @@ public class Block {
     }
 
     public void calculHeightPress(GameEnvironnement gameEnvironnement){
-        System.out.println(gameEnvironnement.vitesse_actuelle_pixel_per_ms*press_time);
         press_height = gameEnvironnement.vitesse_actuelle_pixel_per_ms*press_time;
-        System.out.println(press_height);
+
         sprite_press.setSize(Texture_File.TEXTURE_BLOCK_DEFAULT_WIDTH, press_height);
+
     }
 }

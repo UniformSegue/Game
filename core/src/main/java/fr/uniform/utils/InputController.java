@@ -1,7 +1,5 @@
 package fr.uniform.utils;
 
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import fr.uniform.GameEnvironnement;
@@ -14,15 +12,10 @@ import java.util.List;
 public class InputController extends InputAdapter {
 
     private List<Button> buttons;
-    private GameEnvironnement gameEnvironnement;
-    private List<Lane> lanes;
-    private Button button_d;
-    private Button button_f;
-    private Button button_g;
-    private Button button_h;
-    private Button button_j;
-    private Button button_k;
-    private Button button_souffle;
+    private final GameEnvironnement gameEnvironnement;
+    private final List<Lane> lanes;
+    private final Button button_d, button_f, button_g, button_h, button_j, button_k, button_souffle;
+
 
     public InputController(List<Button> buttons, GameEnvironnement gameEnvironnement, List<Lane> lanes) {
         this.buttons = buttons;
@@ -110,8 +103,6 @@ public class InputController extends InputAdapter {
             return true;
         }
 
-
-
         if (keycode == Input.Keys.D) {
             button_d.unclicked();
             return true;
@@ -142,23 +133,22 @@ public class InputController extends InputAdapter {
         return false;
     }
 
-    private boolean checkButton(Lane lane,Button button){
+    private void checkButton(Lane lane, Button button){
 
         if (button.timer < 0.2f) {
-            return true; // On bloque l'action
+            return; // On bloque l'action
         }
 
         Block target = getLowestActiveBlock(lane);
 
         if (target != null) {
 
-            boolean success = target.checkBlockClicked(gameEnvironnement);
+            boolean success = !target.visible;
             if (success) {
                 button.timer = 0;
-                target.visible = false;
+
             }
         }
-        return false;
     }
 
     private Block getLowestActiveBlock(Lane lane) {
