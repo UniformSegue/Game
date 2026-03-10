@@ -46,20 +46,13 @@ public class LevelScreen implements Screen {
         pause = false;
         this.game = game;
 
-        vitesse = 5;
-        vitesse_turbo = 10;
+        vitesse = GameVariable.VITESSE;
+        vitesse_turbo = GameVariable.VITESSE_TURBO;
 
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
         screenWidth = Gdx.graphics.getWidth();
         screenHeight = Gdx.graphics.getHeight();
-
-        // Initialisation des contrôleurs
-        comboController = new ComboController(100, 600);
-        errorIndiquator = new ErrorIndiquator(1700, 600, Texture_File.ERROR_INDIQUATOR_WIDTH, Texture_File.ERROR_INDIQUATOR_HEIGHT, Texture_File.ERROR_INDIQUATOR);
-        PasseIndiquator passeIndiquator = new PasseIndiquator(100, 400, Texture_File.PASS_INDIQUATOR_WIDTH, Texture_File.PASS_INDIQUATOR_HEIGHT, Texture_File.PASS_INDIQUATOR);
-
-        gameEnvironnement = new GameEnvironnement(vitesse, vitesse_turbo, 200, errorIndiquator, passeIndiquator, comboController);
 
         initLanesAndButtons(); // Méthode pour clarifier le constructeur
 
@@ -74,8 +67,7 @@ public class LevelScreen implements Screen {
 
 
     private void initLanesAndButtons() {
-        vitesse = 5;
-        vitesse_turbo = 10;
+
         //Indiquator
         comboController = new ComboController(100,600);
         errorIndiquator = new ErrorIndiquator(1700,600,

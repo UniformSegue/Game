@@ -5,7 +5,22 @@
       "timestamp": 1000,
       "lane": 1,
       "time_press": 1000
+    },{
+      "timestamp": 2000,
+      "lane": 2,
+      "time_press": 1000
+    },{
+      "timestamp": 2000,
+      "lane": 3,
+      "time_press": 1000
+    },{
+      "timestamp": 4000,
+      "lane": 1,
+      "time_press": 2000
+    },{
+      "timestamp": 5000,
+      "lane": 1,
+      "time_press": 1000
     }
-
   ]
 }

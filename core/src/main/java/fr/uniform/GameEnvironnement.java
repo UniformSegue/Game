@@ -56,7 +56,6 @@ public class GameEnvironnement {
 
     public void ComboManager(boolean resultClicked, Block block) {
 
-        System.out.println(block);
 
         if(resultClicked) {
             combo++;
