@@ -1,6 +1,6 @@
 package fr.uniform.utils;
 
-import fr.uniform.object.Block;
+import fr.uniform.object.game.Block;
 
 import java.util.Random;
 

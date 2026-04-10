@@ -1,8 +1,7 @@
 package fr.uniform.utils;
 
-import fr.uniform.GameEnvironnement;
 import fr.uniform.Texture_File;
-import fr.uniform.object.ComboIndiquator;
+import fr.uniform.object.game.ComboIndiquator;
 
 public class ComboController {
 

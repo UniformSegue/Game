@@ -3,9 +3,9 @@ package fr.uniform.utils;
 import com.google.gson.*;
 import fr.uniform.GameEnvironnement;
 import fr.uniform.Texture_File;
-import fr.uniform.object.Block;
-import fr.uniform.object.Lane;
-import fr.uniform.object.Note;
+import fr.uniform.object.game.Block;
+import fr.uniform.object.game.Lane;
+import fr.uniform.object.game.Note;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -88,7 +88,7 @@ public class MusicController {
         if (!currentNotes.isEmpty()) {
             for (Note note : currentNotes) {
 
-                note.block = new Block(note.lane.x,calculerY(delaTime,note.timestamp,gameEnvironnement.vitesse_actuelle_pixel_per_ms), Texture_File.TEXTURE_BLOCK_DEFAULT_WIDTH,Texture_File.TEXTURE_BLOCK_DEFAULT_HEIGHT,note.time_press, true,gameEnvironnement.block_vitesse_pixel_per_frame,Texture_File.BLOCK_DEFAULT,Texture_File.BLOCK_TURBO,Texture_File.BLOCK_PRESS, note.lane);
+                note.block = new Block(note.lane.x,calculerY(delaTime,note.timestamp,gameEnvironnement.vitesse_actuelle_pixel_per_ms), Texture_File.TEXTURE_BLOCK_DEFAULT_WIDTH,Texture_File.TEXTURE_BLOCK_DEFAULT_HEIGHT,note.time_press, true,gameEnvironnement.block_vitesse_pixel_per_frame,Texture_File.BLOCK_DEFAULT,Texture_File.BLOCK_TURBO,Texture_File.BLOCK_PRESS,note.lane);
                 Block block = Block.spawnBlock(note.lane,gameEnvironnement,(int)note.block.y,note);
                 note.lane.blocks.add(block);
 

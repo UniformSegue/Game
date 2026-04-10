@@ -3,21 +3,24 @@ package fr.uniform.utils;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import fr.uniform.GameEnvironnement;
-import fr.uniform.object.Block;
-import fr.uniform.object.Button;
-import fr.uniform.object.Lane;
+import fr.uniform.object.game.Block;
+import fr.uniform.object.game.Button;
+import fr.uniform.object.game.Lane;
+import fr.uniform.screen.LevelScreen;
 
 import java.util.List;
 
 public class InputController extends InputAdapter {
 
+    private LevelScreen levelScreen;
     private List<Button> buttons;
     private final GameEnvironnement gameEnvironnement;
     private final List<Lane> lanes;
     private final Button button_d, button_f, button_g, button_h, button_j, button_k, button_souffle;
 
 
-    public InputController(List<Button> buttons, GameEnvironnement gameEnvironnement, List<Lane> lanes) {
+    public InputController(LevelScreen levelScreen,List<Button> buttons, GameEnvironnement gameEnvironnement, List<Lane> lanes) {
+        this.levelScreen = levelScreen;
         this.buttons = buttons;
         this.gameEnvironnement = gameEnvironnement;
         this.lanes = lanes;
@@ -33,6 +36,11 @@ public class InputController extends InputAdapter {
     @Override
     public boolean keyDown(int keycode) {
 
+        if (keycode == Input.Keys.ESCAPE) {
+            levelScreen.togglePause();
+            return true;
+        }
+
         if (keycode == Input.Keys.Q) {
 
             button_souffle.clicked();
@@ -40,9 +48,12 @@ public class InputController extends InputAdapter {
         }
 
         if (gameEnvironnement != null) {
-            if(!gameEnvironnement.checkSouffle()){
-                return false;
+            if(gameEnvironnement.souffleActive){
+                if(!gameEnvironnement.checkSouffle()){
+                    return false;
+                }
             }
+
         }
         if (keycode == Input.Keys.D) {
 
@@ -157,7 +168,7 @@ public class InputController extends InputAdapter {
 
         List<Block> blocks = lane.blocks;
         for (Block block : blocks) {
-
+            if (block ==null) continue;
             if (block.visible && block.fallen) {
 
                 if (block.sprite_default.getY() < lowestY) {

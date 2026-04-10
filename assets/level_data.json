@@ -3,7 +3,7 @@
   "notes": [
     {
       "timestamp": 1000,
-      "lane": 1,
+      "lane": 0,
       "time_press": 1000
     },{
       "timestamp": 2000,
@@ -11,7 +11,7 @@
       "time_press": 1000
     },{
       "timestamp": 2000,
-      "lane": 3,
+      "lane": 5,
       "time_press": 1000
     },{
       "timestamp": 4000,
@@ -19,7 +19,11 @@
       "time_press": 2000
     },{
       "timestamp": 5000,
-      "lane": 1,
+      "lane": 5,
+      "time_press": 1000
+    },{
+      "timestamp": 6000,
+      "lane": 5,
       "time_press": 1000
     }
   ]

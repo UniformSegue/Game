@@ -1,13 +1,11 @@
 package fr.uniform;
 
-import com.badlogic.gdx.Gdx;
-import fr.uniform.object.Block;
-import fr.uniform.object.Button;
-import fr.uniform.object.ErrorIndiquator;
-import fr.uniform.object.PasseIndiquator;
+import fr.uniform.object.game.Block;
+import fr.uniform.object.game.Button;
+import fr.uniform.object.game.ErrorIndiquator;
+import fr.uniform.object.game.PasseIndiquator;
 import fr.uniform.utils.ComboController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class GameEnvironnement {
@@ -25,18 +23,22 @@ public class GameEnvironnement {
     public float timer_button_d;
     public int hauter_y_line;
     public boolean souffleActive;
+    public int nombre_lane;
 
     private ErrorIndiquator errorIndiquator;
     private PasseIndiquator passeIndiquator;
     ComboController comboController;
     public List<Button> buttons;
 
+    //Sound Config
+    public boolean soundButton;
+
 
     public void setButtons(List<Button> buttons) {
         this.buttons = buttons;
     }
 
-    public GameEnvironnement(float vitesse, float vitesse_turbo, int hauter_y_line, ErrorIndiquator errorIndiquator, PasseIndiquator passeIndiquator, ComboController comboController) {
+    public GameEnvironnement(float vitesse, float vitesse_turbo, int hauter_y_line, ErrorIndiquator errorIndiquator, PasseIndiquator passeIndiquator, ComboController comboController,boolean soundButton, boolean souffleActive, int nombre_lane) {
         this.turbo = false;
         this.block_vitesse_turbo_pixel_per_frame = vitesse_turbo;
         this.block_vitesse_pixel_per_frame = vitesse;
@@ -48,7 +50,9 @@ public class GameEnvironnement {
         this.passeIndiquator = passeIndiquator;
         this.comboController = comboController;
         this.hauter_y_line = hauter_y_line;
-        this.souffleActive = false;
+        this.souffleActive = souffleActive;
+        this.soundButton = soundButton;
+        this.nombre_lane = nombre_lane;
 
         comboController.setIndiquator();
 
@@ -58,7 +62,8 @@ public class GameEnvironnement {
 
 
         if(resultClicked) {
-            combo++;
+            if(combo <99) {combo++;}
+
             comboController.enabledComboIndiquator();
             comboController.updateNumber(combo);
             this.errorIndiquator.invisible();
