@@ -29,6 +29,7 @@ public class GameEnvironnement {
     private PasseIndiquator passeIndiquator;
     ComboController comboController;
     public List<Button> buttons;
+    public int maxcombo = 0;
 
     //Sound Config
     public boolean soundButton;
@@ -62,7 +63,10 @@ public class GameEnvironnement {
 
 
         if(resultClicked) {
-            if(combo <99) {combo++;}
+            if(combo <99) {
+                combo++;
+                changeMaxCombo(combo);
+            }
 
             comboController.enabledComboIndiquator();
             comboController.updateNumber(combo);
@@ -95,4 +99,10 @@ public class GameEnvironnement {
         return buttons.get(6).clicked;
     }
 
+    private void changeMaxCombo(int comboChange){
+        if(maxcombo < comboChange){
+            maxcombo = comboChange;
+        }
+
+    }
 }

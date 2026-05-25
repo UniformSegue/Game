@@ -2,6 +2,7 @@ package fr.uniform;
 
 import com.badlogic.gdx.Game;
 
+import fr.uniform.screen.EcranFinNiveau;
 import fr.uniform.screen.MenuScreen;
 
 public class Main extends Game{

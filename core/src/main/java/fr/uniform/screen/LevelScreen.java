@@ -3,20 +3,25 @@ package fr.uniform.screen;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
-import com.badlogic.gdx.Screen; // IMPORTANT
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.files.FileHandle; // <-- Import de LibGDX ajouté
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import fr.uniform.GAME_SPEC;
 import fr.uniform.GameEnvironnement;
 import fr.uniform.Texture_File;
 import fr.uniform.object.game.*;
 import fr.uniform.object.menu.Background;
+import fr.uniform.object.menu.Ocarina;
 import fr.uniform.utils.ComboController;
 import fr.uniform.utils.InputController;
 import fr.uniform.utils.MusicController;
@@ -26,10 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LevelScreen implements Screen {
-    // On garde une référence vers le jeu principal pour changer d'écran si besoin
     private final Game game;
 
-    // --- Tes variables existantes ---
     private Music music;
     private MusicController musicController;
     private GameEnvironnement gameEnvironnement;
@@ -37,29 +40,36 @@ public class LevelScreen implements Screen {
     private float screenHeight, screenWidth;
     private SpriteBatch batch;
     private ErrorIndiquator errorIndiquator;
-    private PasseIndiquator passeIndiquator; // Correction nom si nécessaire
+    private PasseIndiquator passeIndiquator;
     private ComboController comboController;
     private List<Button> buttons;
     private Button button_f, button_d, button_g, button_h, button_j, button_k, button_souffle;
     private List<Lane> lanes;
     private Lane lane_f, lane_d, lane_g, lane_h, lane_j, lane_k;
     private float vitesse, vitesse_turbo;
-    private boolean pause; // pause var
+    private boolean pause;
     private Background background;
+    private Ocarina ocarina;
     private int nombre_lane;
     private boolean souffle;
 
-    //Pour Overlay
     private InputController inputController;
     private PauseOverlay pauseMenu;
     private Skin skin;
     private String level_data;
 
-    //Debug
     private Label debugLabel;
 
-    // Constructeur : On initialise tout ici (anciennement create)
-    public LevelScreen(Game game, float vitesse, float vitesse_turbo, String level_data, int nombre_lane,boolean souffle) {
+    private boolean isLevelFinished = false;
+    private int maxComboJoueur = 0;
+
+    // --- VARIABLES POUR LE COMPTE À REBOURS ---
+    private boolean isCountingDown = true;
+    private float countdownTimer = 3.0f;
+    private Stage hudStage;
+    private Label countdownLabel;
+
+    public LevelScreen(Game game, float vitesse, float vitesse_turbo, String level_data, int nombre_lane, boolean souffle) {
 
         pause = false;
         this.game = game;
@@ -67,7 +77,7 @@ public class LevelScreen implements Screen {
         this.vitesse_turbo = vitesse_turbo;
         this.nombre_lane = nombre_lane;
         this.souffle = souffle;
-        this.level_data = level_data; // On sauvegarde la donnée pour pouvoir recommencer
+        this.level_data = level_data;
         this.skin = new Skin(Gdx.files.internal("ui/pixthulhu-ui.json"));
 
         batch = new SpriteBatch();
@@ -75,12 +85,37 @@ public class LevelScreen implements Screen {
         screenWidth = Gdx.graphics.getWidth();
         screenHeight = Gdx.graphics.getHeight();
 
-        initLanesAndButtons(); // Méthode pour clarifier le constructeur
+        initLanesAndButtons();
 
         musicController = new MusicController(lanes, gameEnvironnement);
         musicController.loadMusicData(level_data);
 
-        music = Gdx.audio.newMusic(Gdx.files.internal(musicController.getAudioFileName()));
+        String audioFileName = musicController.getAudioFileName();
+        if (audioFileName == null) {
+            throw new RuntimeException("Erreur : Impossible de récupérer le nom de la musique depuis le JSON.");
+        }
+
+        // ------------------------------------------------------------------
+        // CORRECTION ICI : ON OUBLIE java.io.File ET ON UTILISE FileHandle
+        // ------------------------------------------------------------------
+        FileHandle levelFileAbsolu = Gdx.files.absolute(level_data);
+        FileHandle musicFileHandle;
+
+        if (levelFileAbsolu.exists()) {
+            // Si le fichier existe en mode "absolu", c'est un Custom Level.
+            // On demande à LibGDX de prendre le dossier parent de ce niveau et d'y chercher la musique
+            musicFileHandle = levelFileAbsolu.parent().child(audioFileName);
+            System.out.println("Chargement de la musique Custom depuis : " + musicFileHandle.path());
+        } else {
+            // Sinon, c'est un niveau de base compilé dans le .jar
+            FileHandle levelFileInterne = Gdx.files.internal(level_data);
+            musicFileHandle = levelFileInterne.parent().child(audioFileName);
+            System.out.println("Chargement de la musique de base depuis : " + musicFileHandle.path());
+        }
+        // ------------------------------------------------------------------
+
+        music = Gdx.audio.newMusic(musicFileHandle);
+
         long currentMillis = (long) (music.getPosition() * 1000);
         musicController.generateNotes(currentMillis);
 
@@ -88,43 +123,48 @@ public class LevelScreen implements Screen {
         float volumeEnregistre = prefs.getFloat("musicVolume", 0.5f);
 
         music.setVolume(volumeEnregistre);
-        System.out.println(volumeEnregistre);
-        //Background
-        background = new Background(0,0, GAME_SPEC.width,GAME_SPEC.height,Texture_File.BACKGROUND);
 
+        music.setOnCompletionListener(new Music.OnCompletionListener() {
+            @Override
+            public void onCompletion(Music music) {
+                isLevelFinished = true;
+            }
+        });
+
+        background = new Background(0,0, GAME_SPEC.width,GAME_SPEC.height,Texture_File.BACKGROUND);
+        ocarina = new Ocarina(300,-400, Texture_File.TEXTURE_OCARINA_WIDTH,Texture_File.TEXTURE_OCARINA_HEIGHT,Texture_File.OCARINA);
 
         pauseMenu = new PauseOverlay(game, this, skin, vitesse, vitesse_turbo, level_data, nombre_lane, souffle);
 
-        // On initialise l'InputController ici plutôt que dans show()
         inputController = new InputController(this, buttons, gameEnvironnement, lanes);
 
-
-        //Debug
         Label.LabelStyle debugStyle = new Label.LabelStyle(skin.getFont("font"), Color.YELLOW);
         debugLabel = new Label("Calcul de la RAM...", debugStyle);
-
-        // On le place en haut à droite
         debugLabel.setPosition(1920 - 400, 1080 - 50);
+
+        hudStage = new Stage(new FitViewport(GAME_SPEC.width, GAME_SPEC.height));
+        countdownLabel = new Label("3", skin, "title");
+        countdownLabel.setFontScale(4f);
+        countdownLabel.setSize(GAME_SPEC.width, GAME_SPEC.height);
+        countdownLabel.setAlignment(Align.center);
+        hudStage.addActor(countdownLabel);
     }
 
 
     private void initLanesAndButtons() {
-
-        //Indiquator
         comboController = new ComboController(100,600);
         errorIndiquator = new ErrorIndiquator(1700,600,
             Texture_File.ERROR_INDIQUATOR_WIDTH,Texture_File.ERROR_INDIQUATOR_HEIGHT,Texture_File.ERROR_INDIQUATOR);
         passeIndiquator = new PasseIndiquator(100,400,
             Texture_File.PASS_INDIQUATOR_WIDTH,Texture_File.PASS_INDIQUATOR_HEIGHT,Texture_File.PASS_INDIQUATOR);
-        //Game variable set
-        gameEnvironnement = new GameEnvironnement(vitesse,vitesse_turbo,200,errorIndiquator,passeIndiquator, comboController, false, souffle,nombre_lane);
+
+        gameEnvironnement = new GameEnvironnement(vitesse,vitesse_turbo,230,errorIndiquator,passeIndiquator, comboController, false, souffle,nombre_lane);
 
         shapeRenderer = new ShapeRenderer();
         screenWidth = Gdx.graphics.getWidth();
         screenHeight = Gdx.graphics.getHeight();
         batch = new SpriteBatch();
 
-        //Lane Creation
         lanes = new ArrayList<>();
         lane_d = new Lane(430, gameEnvironnement.hauter_y_line, Texture_File.TEXTURE_LANE_WIDTH,Texture_File.TEXTURE_LANE_HEIGHT, button_d ,Texture_File.LANE_DEFAULT, new ArrayList<>());
         lane_f = new Lane(630, gameEnvironnement.hauter_y_line, Texture_File.TEXTURE_LANE_WIDTH,Texture_File.TEXTURE_LANE_HEIGHT, button_f ,Texture_File.LANE_DEFAULT, new ArrayList<>());
@@ -133,9 +173,6 @@ public class LevelScreen implements Screen {
         lane_j = new Lane(1230, gameEnvironnement.hauter_y_line, Texture_File.TEXTURE_LANE_WIDTH,Texture_File.TEXTURE_LANE_HEIGHT, button_j ,Texture_File.LANE_DEFAULT, new ArrayList<>());
         lane_k = new Lane(1430, gameEnvironnement.hauter_y_line, Texture_File.TEXTURE_LANE_WIDTH,Texture_File.TEXTURE_LANE_HEIGHT, button_k ,Texture_File.LANE_DEFAULT, new ArrayList<>());
 
-
-
-        //Button Creation
         buttons = new ArrayList<>();
 
         button_d = new Button(lane_d.x-((Texture_File.TEXTURE_BUTTON_WIDTH - Texture_File.TEXTURE_LANE_WIDTH)/2)
@@ -177,18 +214,40 @@ public class LevelScreen implements Screen {
             lane_d.playabled();
             lane_k.playabled();
         }
-
     }
 
     @Override
     public void show() {
-        // Cette méthode est appelée quand l'écran devient l'écran actif
-        music.play();
         Gdx.input.setInputProcessor(inputController);
     }
 
     @Override
     public void render(float delta) {
+        if (isLevelFinished) {
+            terminerNiveau();
+            return;
+        }
+
+        if (isCountingDown) {
+            countdownTimer -= delta;
+
+            if (countdownTimer > 0) {
+                countdownLabel.setText(String.valueOf((int) Math.ceil(countdownTimer)));
+            } else if (countdownTimer > -1.0f) {
+                countdownLabel.setText("GO !");
+                countdownLabel.setColor(Color.GREEN);
+            } else {
+                isCountingDown = false;
+                countdownLabel.setVisible(false);
+                music.play();
+            }
+
+            draw();
+            hudStage.act(delta);
+            hudStage.draw();
+
+            return;
+        }
 
         if (!pause){
             logic(delta);
@@ -201,11 +260,17 @@ public class LevelScreen implements Screen {
         }
     }
 
+    private void terminerNiveau() {
+        maxComboJoueur = gameEnvironnement.maxcombo;
+        System.out.println("Niveau terminé ! Transition vers l'écran des scores...");
+
+        game.setScreen(new EcranFinNiveau(game, maxComboJoueur, (int)vitesse, (int)vitesse_turbo, level_data, nombre_lane, souffle));
+        this.dispose();
+    }
+
     private void logic(float delta) {
-        // Mise à jour des timers de boutons
         for(Button b : buttons) b.timer += delta;
 
-        // Logique des blocs qui tombent
         for (Lane lane : lanes) {
             if (lane == null ) continue;
             for (Block block : lane.blocks) {
@@ -217,7 +282,6 @@ public class LevelScreen implements Screen {
     }
 
     private void draw() {
-
         long javaRam = Gdx.app.getJavaHeap() / (1024 * 1024);
         long nativeRam = Gdx.app.getNativeHeap() / (1024 * 1024);
         int fps = Gdx.graphics.getFramesPerSecond();
@@ -225,22 +289,17 @@ public class LevelScreen implements Screen {
         debugLabel.setText("FPS: " + fps + " | Java: " + javaRam + " MB | Images (Native): " + nativeRam + " MB");
 
         batch.begin();
-        //Background
         background.sprite.draw(batch);
+        ocarina.sprite.draw(batch);
 
+        //debugLabel.draw(batch, 1f);
 
-        debugLabel.draw(batch, 1f);
-
-        //Render Lane
         for (Lane lane : lanes) {
             if (lane.playabled) {
-
                 batch.draw(lane.texture, lane.x, lane.y, lane.width, lane.height);
-
             }
         }
 
-        //Render Buttons
         for (Button button : buttons) {
             if(button == null) continue;
             if(!button.visibled)continue;
@@ -248,29 +307,23 @@ public class LevelScreen implements Screen {
                 batch.draw(button.texture_unpressed, button.x, button.y, button.width, button.height);
             } else {
                 batch.draw(button.texture_pressed, button.x, button.y, button.width, button.height);
-
             }
         }
 
-        //Render Blocks
-        int count = 0;
         for (Lane lane : lanes){
             List<Block> blocks = lane.blocks;
             for (Block block : blocks) {
                 if (block ==null) continue;
                 if (block.visible) {
-                    //Regle opacite du block a Texture_File.TEXTURE_OPACITY
                     block.sprite_press.draw(batch);
                     block.sprite_default.draw(batch);
                     if (gameEnvironnement.turbo){
                         block.sprite_turbo.draw(batch);
                     }
-
                 }
             }
         }
 
-        //Render Indiquator
         if (errorIndiquator.visible) {
             errorIndiquator.sprite.draw(batch);
         }
@@ -278,7 +331,6 @@ public class LevelScreen implements Screen {
             passeIndiquator.sprite.draw(batch);
         }
 
-        //render Combo
         if (comboController.comboIndiquatorCroix.visible) {
             comboController.comboIndiquatorCroix.sprite.draw(batch);
         }
@@ -289,41 +341,46 @@ public class LevelScreen implements Screen {
             comboController.comboIndiquatorDeuxieme.sprite.draw(batch);
         }
 
-
-
         batch.end();
     }
 
     @Override
-    public void resize(int width, int height) {}
+    public void resize(int width, int height) {
+        if (hudStage != null) {
+            hudStage.getViewport().update(width, height, true);
+        }
+    }
 
     public void togglePause() {
+        if (isCountingDown) return;
+
         pause = !pause;
 
         if (pause) {
             music.pause();
-            // Le menu Pause prend le contrôle de la souris
             Gdx.input.setInputProcessor(pauseMenu.getStage());
         } else {
             music.play();
-            // Le jeu reprend le contrôle du clavier
             Gdx.input.setInputProcessor(inputController);
         }
     }
 
     @Override
     public void pause() {
-        music.pause();
+        if (!isCountingDown) {
+            music.pause();
+        }
     }
 
     @Override
     public void resume() {
-        music.play();
+        if (!isCountingDown && !pause) {
+            music.play();
+        }
     }
 
     @Override
     public void hide() {
-        // Appelé quand on change d'écran
         music.stop();
     }
 
@@ -331,19 +388,17 @@ public class LevelScreen implements Screen {
     public void dispose() {
         System.out.println("Nettoyage de la RAM de l'ancien niveau...");
 
-        // Les outils de dessin
         if (batch != null) batch.dispose();
         if (shapeRenderer != null) shapeRenderer.dispose();
 
-        //La musique
+        if (hudStage != null) hudStage.dispose();
+
         if (music != null) {
             music.stop();
             music.dispose();
         }
 
-        //L'interface de pause
         if (pauseMenu != null) pauseMenu.dispose();
         if (skin != null) skin.dispose();
-
     }
 }

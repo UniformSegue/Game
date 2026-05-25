@@ -78,7 +78,7 @@ public class MenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println("Menu Custom Level ouvert !");
-                // TODO: game.setScreen(new EcranCustomLevel(game));
+                game.setScreen(new EcranCustomLevel(game));
             }
         });
 

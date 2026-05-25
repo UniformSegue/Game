@@ -27,7 +27,7 @@ public class Lwjgl3Launcher {
         configuration.setForegroundFPS(60);
         configuration.setWindowedMode(GAME_SPEC.width, GAME_SPEC.height);
 
-        configuration.setWindowIcon("libgdx128.png", "libgdx64.png", "libgdx32.png", "libgdx16.png");
+        configuration.setWindowIcon("logo128.png", "logo64.png", "logo32.png", "logo16.png");
 
         //// This should improve compatibility with Windows machines with buggy OpenGL drivers, Macs
         //// with Apple Silicon that have to emulate compatibility with OpenGL anyway, and more.

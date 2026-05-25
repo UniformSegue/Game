@@ -1,12 +1,15 @@
 package fr.uniform.utils;
 
+import com.badlogic.gdx.Gdx; // <-- IMPORT AJOUTÉ
+import com.badlogic.gdx.files.FileHandle; // <-- IMPORT AJOUTÉ
 import com.google.gson.*;
 import fr.uniform.GameEnvironnement;
 import fr.uniform.Texture_File;
 import fr.uniform.object.game.Block;
 import fr.uniform.object.game.Lane;
 import fr.uniform.object.game.Note;
-import java.io.FileReader;
+
+// On supprime l'import de java.io.FileReader qui faisait planter le .jar
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Type;
@@ -37,18 +40,36 @@ public class MusicController {
             .registerTypeAdapter(Note.class, new NoteDeserializer())
             .create();
 
-        try (Reader reader = new FileReader(jsonFilePath)) {
+        try {
+            // 1. On utilise le système de fichiers de LibGDX
+            FileHandle file = Gdx.files.absolute(jsonFilePath);
 
+            // Si le fichier n'existe pas en mode absolu (Custom Level), on cherche en interne
+            if (!file.exists()) {
+                file = Gdx.files.internal(jsonFilePath);
 
-            LevelData data = gson.fromJson(reader, LevelData.class);
+                // Petite sécurité si le chemin est juste le nom du fichier
+                if (!file.exists()) {
+                    file = Gdx.files.internal("music/" + jsonFilePath);
+                }
+            }
 
+            // 2. On vérifie que LibGDX a bien trouvé le fichier
+            if (file.exists()) {
+                // 3. MAGIE : On utilise file.reader() au lieu de new FileReader() !
+                try (Reader reader = file.reader()) {
+                    LevelData data = gson.fromJson(reader, LevelData.class);
 
-            this.currentAudioFileName = data.audioFile;
-            this.currentNotes = data.notes;
+                    this.currentAudioFileName = data.audioFile;
+                    this.currentNotes = data.notes;
 
-            System.out.println("Succes : " + currentNotes.size() + " notes chargees pour " + currentAudioFileName);
+                    System.out.println("Succes : " + currentNotes.size() + " notes chargees pour " + currentAudioFileName);
+                }
+            } else {
+                System.err.println("ERREUR : Fichier JSON introuvable -> " + jsonFilePath);
+            }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.err.println("Erreur lors du chargement du fichier JSON : " + jsonFilePath);
             e.printStackTrace();
         }

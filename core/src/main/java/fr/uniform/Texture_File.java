@@ -7,6 +7,7 @@ public class Texture_File {
 
     // --- LES CONSTANTES (Tailles, Multiplicateurs, etc.) ---
     public static final int multiplicateur_texture = 5;
+    public static final int multiplicateur_texture_button = 5;
 
     public static final int COMBO_WIDTH_BASE = 16;
     public static final int COMBO_HEIGHT_BASE = 16;
@@ -18,16 +19,16 @@ public class Texture_File {
     public static final int PASS_INDIQUATOR_WIDTH = 32 * multiplicateur_texture;
     public static final int PASS_INDIQUATOR_HEIGHT = 32 * multiplicateur_texture;
 
-    public static final int TEXTURE_BLOCK_DEFAULT_WIDTH = 32 * multiplicateur_texture;
-    public static final int TEXTURE_BLOCK_DEFAULT_HEIGHT = 32 * multiplicateur_texture;
-    public static final int TEXTURE_BLOCK_TURBO_WIDTH = 32 * multiplicateur_texture;
-    public static final int TEXTURE_BLOCK_TURBO_HEIGHT = 64 * multiplicateur_texture;
+    public static final int TEXTURE_BLOCK_DEFAULT_WIDTH = 32 * multiplicateur_texture_button;
+    public static final int TEXTURE_BLOCK_DEFAULT_HEIGHT = 32 * multiplicateur_texture_button;
+    public static final int TEXTURE_BLOCK_TURBO_WIDTH = 32 * multiplicateur_texture_button;
+    public static final int TEXTURE_BLOCK_TURBO_HEIGHT = 64 * multiplicateur_texture_button;
     public static final float TEXTURE_OPACITY = 1f;
     public static final float TEXTURE_OPACITY_TURBO = 0.3f;
     public static final int TEXTURE_BLOCK_PRESS_WIDTH = 2 * multiplicateur_texture;
 
-    public static final int TEXTURE_BUTTON_WIDTH = 32 * multiplicateur_texture;
-    public static final int TEXTURE_BUTTON_HEIGHT = 32 * multiplicateur_texture;
+    public static final int TEXTURE_BUTTON_WIDTH = 32 * multiplicateur_texture_button;
+    public static final int TEXTURE_BUTTON_HEIGHT = 32 * multiplicateur_texture_button;
 
     public static final int multiplicateur_texture_lane = 15;
     public static final int TEXTURE_LANE_WIDTH = 2 * multiplicateur_texture_lane;
@@ -38,11 +39,10 @@ public class Texture_File {
     public static final int TEXTURE_TITLE_LEVEL_WIDTH = 128 * multiplicateur_texture;
     public static final int TEXTURE_TITLE_LEVEL_HEIGHT = 64 * multiplicateur_texture;
 
-    public static final int TEXTURE_BUTTON_PLAY_WIDTH = 64 * multiplicateur_texture;
-    public static final int TEXTURE_BUTTON_PLAY_HEIGHT = 32 * multiplicateur_texture;
-    public static final int TEXTURE_BUTTON_OPTION_WIDTH = 64 * multiplicateur_texture;
-    public static final int TEXTURE_BUTTON_OPTION_HEIGHT = 32 * multiplicateur_texture;
 
+    public static final int multiplicateur_texture_ocarina = 17;
+    public static final int TEXTURE_OCARINA_WIDTH = 64 * (multiplicateur_texture_ocarina + 4 ) ;
+    public static final int TEXTURE_OCARINA_HEIGHT = 64 * multiplicateur_texture_ocarina;
 
     // --- LES TEXTURES ---
     public static Texture COMBO_ALL_NUMBERS;
@@ -71,6 +71,7 @@ public class Texture_File {
     public static Texture BUTTON_PLAY_DEFAULT;
     public static Texture BUTTON_OPTION_DEFAULT;
     public static Texture BACKGROUND;
+    public static Texture OCARINA;
 
     public static Texture ENSIM_LOGO;
 
@@ -85,18 +86,18 @@ public class Texture_File {
         BLOCK_DEFAULT = new Texture(Gdx.files.internal("block_default.png"));
         BLOCK_TURBO = new Texture(Gdx.files.internal("block_turbo.png"));
 
-        BUTTON_F_UNPRESS = new Texture(Gdx.files.internal("f_button_unpress.png"));
-        BUTTON_F_PRESS = new Texture(Gdx.files.internal("f_button_press.png"));
-        BUTTON_D_UNPRESS = new Texture(Gdx.files.internal("d_button_unpress.png"));
-        BUTTON_D_PRESS = new Texture(Gdx.files.internal("d_button_press.png"));
-        BUTTON_G_UNPRESS = new Texture(Gdx.files.internal("g_button_unpress.png"));
-        BUTTON_G_PRESS = new Texture(Gdx.files.internal("g_button_press.png"));
-        BUTTON_H_UNPRESS = new Texture(Gdx.files.internal("h_button_unpress.png"));
-        BUTTON_H_PRESS = new Texture(Gdx.files.internal("h_button_press.png"));
-        BUTTON_J_UNPRESS = new Texture(Gdx.files.internal("j_button_unpress.png"));
-        BUTTON_J_PRESS = new Texture(Gdx.files.internal("j_button_press.png"));
-        BUTTON_K_UNPRESS = new Texture(Gdx.files.internal("k_button_unpress.png"));
-        BUTTON_K_PRESS = new Texture(Gdx.files.internal("k_button_press.png"));
+        BUTTON_F_UNPRESS = new Texture(Gdx.files.internal("button_unpress.png")); //f_
+        BUTTON_F_PRESS = new Texture(Gdx.files.internal("button_press.png"));
+        BUTTON_D_UNPRESS = new Texture(Gdx.files.internal("button_unpress.png"));//d_
+        BUTTON_D_PRESS = new Texture(Gdx.files.internal("button_press.png"));
+        BUTTON_G_UNPRESS = new Texture(Gdx.files.internal("button_unpress.png"));//g_
+        BUTTON_G_PRESS = new Texture(Gdx.files.internal("button_press.png"));
+        BUTTON_H_UNPRESS = new Texture(Gdx.files.internal("button_unpress.png"));//h_
+        BUTTON_H_PRESS = new Texture(Gdx.files.internal("button_press.png"));
+        BUTTON_J_UNPRESS = new Texture(Gdx.files.internal("button_unpress.png"));//j_
+        BUTTON_J_PRESS = new Texture(Gdx.files.internal("button_press.png"));
+        BUTTON_K_UNPRESS = new Texture(Gdx.files.internal("button_unpress.png")); //k_
+        BUTTON_K_PRESS = new Texture(Gdx.files.internal("button_press.png"));
 
         LANE_DEFAULT = new Texture(Gdx.files.internal("lane.png"));
         TITLE_DEFAULT = new Texture(Gdx.files.internal("title.png"));
@@ -104,6 +105,7 @@ public class Texture_File {
         BUTTON_PLAY_DEFAULT = new Texture(Gdx.files.internal("button_play.png"));
         BUTTON_OPTION_DEFAULT = new Texture(Gdx.files.internal("button_option.png"));
         BACKGROUND = new Texture(Gdx.files.internal("bg.png"));
+        OCARINA = new Texture(Gdx.files.internal("ocarina.png"));
 
         ENSIM_LOGO = new Texture(Gdx.files.internal("ensim.png"));
     }
@@ -137,6 +139,7 @@ public class Texture_File {
         if (BUTTON_PLAY_DEFAULT != null) BUTTON_PLAY_DEFAULT.dispose();
         if (BUTTON_OPTION_DEFAULT != null) BUTTON_OPTION_DEFAULT.dispose();
         if (BACKGROUND != null) BACKGROUND.dispose();
+        if (OCARINA != null) BACKGROUND.dispose();
         if (ENSIM_LOGO != null) ENSIM_LOGO.dispose();
     }
 }
