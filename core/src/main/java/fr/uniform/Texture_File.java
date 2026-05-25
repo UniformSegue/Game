@@ -3,51 +3,68 @@ package fr.uniform;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 
+/**
+ * Registre global des textures et constantes dimensionnelles du jeu.
+ * Gère le chargement en mémoire (init) et la libération des ressources graphiques (dispose)
+ * pour éviter les fuites de mémoire (memory leaks).
+ */
 public class Texture_File {
 
-    // --- LES CONSTANTES (Tailles, Multiplicateurs, etc.) ---
+    // =================================================================
+    // CONSTANTES ET MULTIPLICATEURS D'ÉCHELLE
+    // =================================================================
+
     public static final int multiplicateur_texture = 5;
     public static final int multiplicateur_texture_button = 5;
+    public static final int multiplicateur_texture_lane = 15;
+    public static final int multiplicateur_texture_ocarina = 17;
 
+    // --- Dimensions du Combo ---
     public static final int COMBO_WIDTH_BASE = 16;
     public static final int COMBO_HEIGHT_BASE = 16;
-    public static final int COMBO_WIDTH_TEXTURE = COMBO_WIDTH_BASE * (multiplicateur_texture+1);
-    public static final int COMBO_HEIGHT_TEXTURE = COMBO_HEIGHT_BASE * (multiplicateur_texture+1);
+    public static final int COMBO_WIDTH_TEXTURE = COMBO_WIDTH_BASE * (multiplicateur_texture + 1);
+    public static final int COMBO_HEIGHT_TEXTURE = COMBO_HEIGHT_BASE * (multiplicateur_texture + 1);
 
+    // --- Dimensions des Indicateurs ---
     public static final int ERROR_INDIQUATOR_WIDTH = 32 * multiplicateur_texture;
     public static final int ERROR_INDIQUATOR_HEIGHT = 32 * multiplicateur_texture;
     public static final int PASS_INDIQUATOR_WIDTH = 32 * multiplicateur_texture;
     public static final int PASS_INDIQUATOR_HEIGHT = 32 * multiplicateur_texture;
 
+    // --- Dimensions et Propriétés des Blocs ---
     public static final int TEXTURE_BLOCK_DEFAULT_WIDTH = 32 * multiplicateur_texture_button;
     public static final int TEXTURE_BLOCK_DEFAULT_HEIGHT = 32 * multiplicateur_texture_button;
     public static final int TEXTURE_BLOCK_TURBO_WIDTH = 32 * multiplicateur_texture_button;
     public static final int TEXTURE_BLOCK_TURBO_HEIGHT = 64 * multiplicateur_texture_button;
-    public static final float TEXTURE_OPACITY = 1f;
-    public static final float TEXTURE_OPACITY_TURBO = 0.3f;
     public static final int TEXTURE_BLOCK_PRESS_WIDTH = 2 * multiplicateur_texture;
 
+    public static final float TEXTURE_OPACITY = 1f;
+    public static final float TEXTURE_OPACITY_TURBO = 0.3f;
+
+    // --- Dimensions des Boutons et Pistes (Lanes) ---
     public static final int TEXTURE_BUTTON_WIDTH = 32 * multiplicateur_texture_button;
     public static final int TEXTURE_BUTTON_HEIGHT = 32 * multiplicateur_texture_button;
-
-    public static final int multiplicateur_texture_lane = 15;
     public static final int TEXTURE_LANE_WIDTH = 2 * multiplicateur_texture_lane;
     public static final int TEXTURE_LANE_HEIGHT = 256 * multiplicateur_texture_lane;
 
+    // --- Dimensions des Éléments d'Interface et Décor ---
     public static final int TEXTURE_TITLE_WIDTH = 128 * multiplicateur_texture;
     public static final int TEXTURE_TITLE_HEIGHT = 64 * multiplicateur_texture;
     public static final int TEXTURE_TITLE_LEVEL_WIDTH = 128 * multiplicateur_texture;
     public static final int TEXTURE_TITLE_LEVEL_HEIGHT = 64 * multiplicateur_texture;
 
-
-    public static final int multiplicateur_texture_ocarina = 17;
-    public static final int TEXTURE_OCARINA_WIDTH = 64 * (multiplicateur_texture_ocarina + 4 ) ;
+    public static final int TEXTURE_OCARINA_WIDTH = 64 * (multiplicateur_texture_ocarina + 4);
     public static final int TEXTURE_OCARINA_HEIGHT = 64 * multiplicateur_texture_ocarina;
 
-    // --- LES TEXTURES ---
+
+    // =================================================================
+    // RÉFÉRENCES DES TEXTURES
+    // =================================================================
+
     public static Texture COMBO_ALL_NUMBERS;
     public static Texture ERROR_INDIQUATOR;
     public static Texture PASS_INDIQUATOR;
+
     public static Texture BLOCK_PRESS;
     public static Texture BLOCK_DEFAULT;
     public static Texture BLOCK_TURBO;
@@ -72,31 +89,32 @@ public class Texture_File {
     public static Texture BUTTON_OPTION_DEFAULT;
     public static Texture BACKGROUND;
     public static Texture OCARINA;
-
     public static Texture ENSIM_LOGO;
 
-
-    // --- MÉTHODE D'INITIALISATION ---
-    // Cette méthode va charger toutes les images d'un coup.
+    /**
+     * Charge toutes les textures depuis les assets (fichiers internes) vers la RAM vidéo.
+     * Doit être appelée une seule fois au démarrage de l'application (dans la méthode create du Game principal).
+     */
     public static void init() {
-        COMBO_ALL_NUMBERS = new Texture("all_number.png");
+        COMBO_ALL_NUMBERS = new Texture(Gdx.files.internal("all_number.png"));
         ERROR_INDIQUATOR = new Texture(Gdx.files.internal("failed.png"));
         PASS_INDIQUATOR = new Texture(Gdx.files.internal("pass.png"));
+
         BLOCK_PRESS = new Texture(Gdx.files.internal("continuenote.png"));
         BLOCK_DEFAULT = new Texture(Gdx.files.internal("block_default.png"));
         BLOCK_TURBO = new Texture(Gdx.files.internal("block_turbo.png"));
 
-        BUTTON_F_UNPRESS = new Texture(Gdx.files.internal("button_unpress.png")); //f_
+        BUTTON_F_UNPRESS = new Texture(Gdx.files.internal("button_unpress.png"));
         BUTTON_F_PRESS = new Texture(Gdx.files.internal("button_press.png"));
-        BUTTON_D_UNPRESS = new Texture(Gdx.files.internal("button_unpress.png"));//d_
+        BUTTON_D_UNPRESS = new Texture(Gdx.files.internal("button_unpress.png"));
         BUTTON_D_PRESS = new Texture(Gdx.files.internal("button_press.png"));
-        BUTTON_G_UNPRESS = new Texture(Gdx.files.internal("button_unpress.png"));//g_
+        BUTTON_G_UNPRESS = new Texture(Gdx.files.internal("button_unpress.png"));
         BUTTON_G_PRESS = new Texture(Gdx.files.internal("button_press.png"));
-        BUTTON_H_UNPRESS = new Texture(Gdx.files.internal("button_unpress.png"));//h_
+        BUTTON_H_UNPRESS = new Texture(Gdx.files.internal("button_unpress.png"));
         BUTTON_H_PRESS = new Texture(Gdx.files.internal("button_press.png"));
-        BUTTON_J_UNPRESS = new Texture(Gdx.files.internal("button_unpress.png"));//j_
+        BUTTON_J_UNPRESS = new Texture(Gdx.files.internal("button_unpress.png"));
         BUTTON_J_PRESS = new Texture(Gdx.files.internal("button_press.png"));
-        BUTTON_K_UNPRESS = new Texture(Gdx.files.internal("button_unpress.png")); //k_
+        BUTTON_K_UNPRESS = new Texture(Gdx.files.internal("button_unpress.png"));
         BUTTON_K_PRESS = new Texture(Gdx.files.internal("button_press.png"));
 
         LANE_DEFAULT = new Texture(Gdx.files.internal("lane.png"));
@@ -106,16 +124,18 @@ public class Texture_File {
         BUTTON_OPTION_DEFAULT = new Texture(Gdx.files.internal("button_option.png"));
         BACKGROUND = new Texture(Gdx.files.internal("bg.png"));
         OCARINA = new Texture(Gdx.files.internal("ocarina.png"));
-
         ENSIM_LOGO = new Texture(Gdx.files.internal("ensim.png"));
     }
 
-    // --- MÉTHODE DE DESTRUCTION (LE BULLDOZER) ---
-    // Cette méthode va vider la RAM proprement.
+    /**
+     * Libère proprement les ressources graphiques de la carte graphique (VRAM).
+     * Essentiel pour éviter les fuites de mémoire lors de la fermeture de l'application.
+     */
     public static void dispose() {
         if (COMBO_ALL_NUMBERS != null) COMBO_ALL_NUMBERS.dispose();
         if (ERROR_INDIQUATOR != null) ERROR_INDIQUATOR.dispose();
         if (PASS_INDIQUATOR != null) PASS_INDIQUATOR.dispose();
+
         if (BLOCK_PRESS != null) BLOCK_PRESS.dispose();
         if (BLOCK_DEFAULT != null) BLOCK_DEFAULT.dispose();
         if (BLOCK_TURBO != null) BLOCK_TURBO.dispose();
@@ -139,7 +159,8 @@ public class Texture_File {
         if (BUTTON_PLAY_DEFAULT != null) BUTTON_PLAY_DEFAULT.dispose();
         if (BUTTON_OPTION_DEFAULT != null) BUTTON_OPTION_DEFAULT.dispose();
         if (BACKGROUND != null) BACKGROUND.dispose();
-        if (OCARINA != null) BACKGROUND.dispose();
+
+        if (OCARINA != null) OCARINA.dispose(); // <-- Bug corrigé ici
         if (ENSIM_LOGO != null) ENSIM_LOGO.dispose();
     }
 }

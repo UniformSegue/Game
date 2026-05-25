@@ -14,74 +14,82 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import fr.uniform.GAME_SPEC;
-import fr.uniform.screen.LevelScreen;
-import fr.uniform.screen.MenuScreen;
 
+/**
+ * Interface superposée (Overlay) représentant le menu de pause.
+ * Assombrit l'écran de jeu et fournit les contrôles pour reprendre,
+ * recommencer ou quitter le niveau en cours.
+ */
 public class PauseOverlay {
 
     private final Stage stage;
     private final Skin skin;
+    private final Texture textureFond; // Ajouté pour gérer correctement la mémoire de la texture générée
 
     public PauseOverlay(final Game game, final LevelScreen levelScreen, Skin skin,
                         final float vitesse, final float vitesse_turbo,
                         final String level_data, final int nombre_lane, final boolean souffle) {
 
         this.skin = skin;
-        stage = new Stage(new FitViewport(GAME_SPEC.width, GAME_SPEC.height));
+        this.stage = new Stage(new FitViewport(GAME_SPEC.width, GAME_SPEC.height));
 
-        //Création d'un fond noir semi-transparent (Opacité 70%)
+        // Génération d'un fond semi-transparent pour assombrir l'écran de jeu
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(new Color(0, 0, 0, 0.7f));
         pixmap.fill();
-        Image fondAssombri = new Image(new Texture(pixmap));
+
+        this.textureFond = new Texture(pixmap);
+        pixmap.dispose();
+
+        Image fondAssombri = new Image(textureFond);
         fondAssombri.setFillParent(true);
         stage.addActor(fondAssombri);
-        pixmap.dispose(); // On libère la mémoire du Pixmap
 
-        //Création de la table pour centrer les boutons
+        // Structure de mise en page pour centrer les boutons
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
 
-        //Création des boutons
+        // Déclaration des boutons
         TextButton btnReprendre = new TextButton("Reprendre", skin);
         TextButton btnRecommencer = new TextButton("Recommencer", skin);
         TextButton btnQuitter = new TextButton("Quitter", skin);
 
-        // --- ACTIONS DES BOUTONS ---
+        // --- GESTION DES ÉVÉNEMENTS ---
 
         btnReprendre.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                levelScreen.togglePause(); // Enlève la pause
+                levelScreen.togglePause();
             }
         });
 
         btnRecommencer.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // On relance un nouveau LevelScreen avec les mêmes paramètres
                 game.setScreen(new LevelScreen(game, vitesse, vitesse_turbo, level_data, nombre_lane, souffle));
-                levelScreen.dispose(); // On détruit l'ancien niveau
+                levelScreen.dispose();
             }
         });
 
         btnQuitter.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // Retour au menu principal
                 game.setScreen(new MenuScreen(game));
                 levelScreen.dispose();
             }
         });
 
-        //Placement dans la table
+        // Agencement vertical des boutons
         table.add(btnReprendre).width(300).height(100).padBottom(20).row();
         table.add(btnRecommencer).width(400).height(100).padBottom(20).row();
         table.add(btnQuitter).width(300).height(100);
     }
 
-    // Fonction pour dessiner ce menu
+    /**
+     * Met à jour et dessine l'interface de pause.
+     * * @param delta Le temps écoulé (en secondes) depuis le dernier rendu.
+     */
     public void render(float delta) {
         stage.act(delta);
         stage.draw();
@@ -91,7 +99,13 @@ public class PauseOverlay {
         return stage;
     }
 
+    /**
+     * Libère les ressources mémoire utilisées par l'overlay.
+     */
     public void dispose() {
         stage.dispose();
+        if (textureFond != null) {
+            textureFond.dispose();
+        }
     }
 }

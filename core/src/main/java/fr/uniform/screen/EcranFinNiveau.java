@@ -23,6 +23,10 @@ import fr.uniform.GAME_SPEC;
 import fr.uniform.Texture_File;
 import fr.uniform.object.menu.Background;
 
+/**
+ * Écran de fin de niveau présentant les statistiques du joueur,
+ * le combo maximum réalisé, et attribuant une médaille en fonction de la performance.
+ */
 public class EcranFinNiveau implements Screen {
 
     private final Game game;
@@ -37,7 +41,6 @@ public class EcranFinNiveau implements Screen {
     private int nombre_lane;
     private boolean souffleActive;
 
-    // --- Les textures des médailles ---
     private Texture texOr;
     private Texture texArgent;
     private Texture texBronze;
@@ -51,37 +54,33 @@ public class EcranFinNiveau implements Screen {
         this.nombre_lane = nombre_lane;
         this.souffleActive = souffleActive;
 
-        batch = new SpriteBatch();
-        background = new Background(0, 0, GAME_SPEC.width, GAME_SPEC.height, Texture_File.BACKGROUND);
+        this.batch = new SpriteBatch();
+        this.background = new Background(0, 0, GAME_SPEC.width, GAME_SPEC.height, Texture_File.BACKGROUND);
 
-        stage = new Stage(new FitViewport(GAME_SPEC.width, GAME_SPEC.height));
+        this.stage = new Stage(new FitViewport(GAME_SPEC.width, GAME_SPEC.height));
         Gdx.input.setInputProcessor(stage);
 
-        skin = new Skin(Gdx.files.internal("ui/pixthulhu-ui.json"));
-        skin.getFont("font").getData().markupEnabled = true;
-        skin.getFont("title").getData().markupEnabled = true;
-        skin.getFont("subtitle").getData().markupEnabled = true;
+        this.skin = new Skin(Gdx.files.internal("ui/pixthulhu-ui.json"));
+        this.skin.getFont("font").getData().markupEnabled = true;
+        this.skin.getFont("title").getData().markupEnabled = true;
+        this.skin.getFont("subtitle").getData().markupEnabled = true;
 
-        // Chargement des images (assure-toi qu'elles sont bien dans ton dossier assets)
-        texOr = new Texture(Gdx.files.internal("or.png"));
-        texArgent = new Texture(Gdx.files.internal("argent.png"));
-        texBronze = new Texture(Gdx.files.internal("bronze.png"));
+        this.texOr = new Texture(Gdx.files.internal("or.png"));
+        this.texArgent = new Texture(Gdx.files.internal("argent.png"));
+        this.texBronze = new Texture(Gdx.files.internal("bronze.png"));
 
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
 
-        // --- CALCUL DU MAX COMBO ---
+        // Calcul du combo maximum théorique
         int totalNotes = getTotalNotesFromJson(musiqueChoisie);
-
-        // On calcule le combo max (Total des notes - 1)
         int maxComboPossible = Math.max(0, totalNotes - 1);
-        // Le combo ne peut pas dépasser 99
-        maxComboPossible = Math.min(99, maxComboPossible);
+        maxComboPossible = Math.min(99, maxComboPossible); // Plafonnement du combo à 99
 
         System.out.println("Combo maximum possible : " + maxComboPossible + " | Combo du joueur : " + maxComboJoueur);
 
-        // --- CHOIX DE LA MÉDAILLE ---
+        // Détermination de la médaille obtenue
         Texture textureMedailleGagnee = null;
         String texteSiPasDeMedaille = "";
 
@@ -99,13 +98,12 @@ public class EcranFinNiveau implements Screen {
             texteSiPasDeMedaille = "[RED]Erreur niveau[]";
         }
 
-        // --- CRÉATION DES ÉLÉMENTS VISUELS ---
+        // Construction des éléments de l'interface
         Label titre = new Label("[WHITE]NIVEAU TERMINE ![]", skin, "title");
 
         Label statsCombo = new Label("[WHITE]Meilleur Combo : " + maxComboJoueur + "[]", skin);
         statsCombo.setFontScale(1.5f);
 
-        // Sous-table pour aligner le texte "Médaille" avec l'image
         Table tableMedaille = new Table();
         Label labelMedaille = new Label("[WHITE]Medaille : []", skin);
         labelMedaille.setFontScale(2f);
@@ -120,13 +118,13 @@ public class EcranFinNiveau implements Screen {
             tableMedaille.add(pasDeMedaille);
         }
 
-        // --- CRÉATION DES BOUTONS ---
         TextButton btnRejouer = new TextButton("REJOUER", skin);
         TextButton btnMenu = new TextButton("MENU PRINCIPAL", skin);
 
         btnRejouer.getLabel().setFontScale(1.5f);
         btnMenu.getLabel().setFontScale(1.5f);
 
+        // Configuration des événements des boutons
         btnRejouer.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -143,18 +141,20 @@ public class EcranFinNiveau implements Screen {
             }
         });
 
-        // --- PLACEMENT DANS LA TABLE PRINCIPALE ---
+        // Agencement final de la table principale
         table.add(titre).padBottom(60).colspan(2).row();
         table.add(statsCombo).padBottom(20).colspan(2).row();
-
         table.add(tableMedaille).padBottom(80).colspan(2).row();
-
         table.add(btnRejouer).width(430).height(150).padRight(50);
         table.add(btnMenu).width(700).height(150);
     }
 
     /**
-     * Lit le JSON et compte uniquement les notes qui seront réellement jouées.
+     * Lit la beatmap JSON et calcule le nombre total de notes réellement jouables,
+     * en adaptant le comptage selon la configuration des pistes (ex: mode 4 trous vs 6 trous).
+     *
+     * @param cheminFichier Le chemin d'accès au fichier JSON contenant les données du niveau.
+     * @return Le nombre total de notes valides.
      */
     private int getTotalNotesFromJson(String cheminFichier) {
         try {
@@ -172,18 +172,15 @@ public class EcranFinNiveau implements Screen {
                 if (notes != null && notes.isArray()) {
                     int notesValides = 0;
 
-                    // On parcourt chaque note du fichier JSON
                     for (int i = 0; i < notes.size; i++) {
                         JsonValue note = notes.get(i);
                         int lane = note.getInt("lane");
 
-                        // --- NOUVEAU ---
-                        // Si on est en mode "Facile" (4 lanes), on ignore les notes des lanes 0 et 5 !
+                        // Exclusion des notes extrêmes (pistes 0 et 5) pour la configuration à 4 pistes
                         if (nombre_lane == 4 && (lane == 0 || lane == 5)) {
-                            continue; // On passe à la note suivante sans l'ajouter au compteur
+                            continue;
                         }
-
-                        notesValides++; // On compte la note
+                        notesValides++;
                     }
                     return notesValides;
                 }

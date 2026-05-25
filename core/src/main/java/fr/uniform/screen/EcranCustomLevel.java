@@ -2,7 +2,7 @@ package fr.uniform.screen;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Preferences; // <-- NOUVEAU
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
@@ -30,6 +30,10 @@ import fr.uniform.object.menu.Background;
 import javax.swing.JFileChooser;
 import java.io.File;
 
+/**
+ * Écran permettant au joueur de charger des niveaux personnalisés
+ * à partir d'un dossier local contenant un fichier music.json.
+ */
 public class EcranCustomLevel implements Screen {
 
     private final Game game;
@@ -45,29 +49,30 @@ public class EcranCustomLevel implements Screen {
     private String dossierCustomChemin = "";
 
     private Array<EcranOptionsGame.MusiqueItem> listeMusiquesCustom = new Array<>();
-
-    // --- NOUVEAU : L'outil de sauvegarde ---
     private Preferences prefs;
 
     public EcranCustomLevel(Game game) {
         this.game = game;
-        batch = new SpriteBatch();
+        this.batch = new SpriteBatch();
 
-        // Initialisation de la sauvegarde (on utilise le même fichier que pour tes options)
-        prefs = Gdx.app.getPreferences("UniformGameOptions");
+        // Chargement des préférences pour mémoriser le dernier dossier utilisé
+        this.prefs = Gdx.app.getPreferences("UniformGameOptions");
 
-        background = new Background(0, 0, GAME_SPEC.width, GAME_SPEC.height, Texture_File.BACKGROUND);
-        ensimLogo = new Sprite(Texture_File.ENSIM_LOGO);
-        ensimLogo.setSize(534, 134);
-        ensimLogo.setPosition(1920 - 534, 45);
+        // Initialisation des éléments visuels de fond
+        this.background = new Background(0, 0, GAME_SPEC.width, GAME_SPEC.height, Texture_File.BACKGROUND);
+        this.ensimLogo = new Sprite(Texture_File.ENSIM_LOGO);
+        this.ensimLogo.setSize(534, 134);
+        this.ensimLogo.setPosition(1920 - 534, 45);
 
-        stage = new Stage(new FitViewport(GAME_SPEC.width, GAME_SPEC.height));
+        // Configuration de la scène et de l'interface utilisateur
+        this.stage = new Stage(new FitViewport(GAME_SPEC.width, GAME_SPEC.height));
         Gdx.input.setInputProcessor(stage);
 
-        skin = new Skin(Gdx.files.internal("ui/pixthulhu-ui.json"));
-        skin.getFont("font").getData().markupEnabled = true;
-        skin.getFont("title").getData().markupEnabled = true;
+        this.skin = new Skin(Gdx.files.internal("ui/pixthulhu-ui.json"));
+        this.skin.getFont("font").getData().markupEnabled = true;
+        this.skin.getFont("title").getData().markupEnabled = true;
 
+        // Bouton de retour au menu principal
         Table tableRetour = new Table();
         tableRetour.setFillParent(true);
         tableRetour.top().left();
@@ -82,15 +87,16 @@ public class EcranCustomLevel implements Screen {
         tableRetour.add(btnRetour).pad(20).width(320).height(120);
         stage.addActor(tableRetour);
 
+        // Construction du menu central
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
 
         Label titre = new Label("[WHITE]NIVEAUX PERSONNALISES[]", skin, "title");
-        labelChemin = new Label("[WHITE]Aucun dossier selectionne[]", skin);
+        this.labelChemin = new Label("[WHITE]Aucun dossier selectionne[]", skin);
 
         TextButton btnOuvrirDossier = new TextButton("Choisir un dossier", skin);
-        menuMusique = new SelectBox<>(skin);
+        this.menuMusique = new SelectBox<>(skin);
         TextButton btnPlay = new TextButton("JOUER", skin);
 
         btnOuvrirDossier.addListener(new ClickListener() {
@@ -122,24 +128,26 @@ public class EcranCustomLevel implements Screen {
             }
         });
 
+        // Assemblage de la table centrale
         table.add(titre).padBottom(50).row();
         table.add(btnOuvrirDossier).width(700).height(120).padBottom(20).row();
         table.add(labelChemin).padBottom(40).row();
 
         menuMusique.getStyle().font.getData().setScale(1.5f);
         table.add(menuMusique).width(600).padBottom(60).row();
-
         table.add(btnPlay).width(300).height(100);
 
-        // --- NOUVEAU : Chargement automatique au démarrage ---
-        // On vérifie si un chemin avait été sauvegardé précédemment
+        // Chargement automatique du dernier dossier utilisé s'il existe
         String cheminSauvegarde = prefs.getString("lastCustomDirectory", "");
         if (!cheminSauvegarde.isEmpty()) {
-            // Si oui, on fait comme si le joueur venait de le choisir dans l'explorateur !
             chargerDossierCustom(cheminSauvegarde);
         }
     }
 
+    /**
+     * Ouvre le sélecteur de fichiers Swing dans un thread séparé
+     * pour ne pas bloquer le thread de rendu principal de LibGDX.
+     */
     private void ouvrirExplorateurFichiers() {
         new Thread(new Runnable() {
             @Override
@@ -148,8 +156,6 @@ public class EcranCustomLevel implements Screen {
                 chooser.setDialogTitle("Sélectionnez le dossier contenant music.json");
                 chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-                // --- PETIT BONUS ---
-                // Si on a déjà un chemin sauvegardé, on ouvre l'explorateur directement dans ce dossier !
                 String cheminSauvegarde = prefs.getString("lastCustomDirectory", "");
                 if (!cheminSauvegarde.isEmpty()) {
                     chooser.setCurrentDirectory(new File(cheminSauvegarde));
@@ -160,6 +166,7 @@ public class EcranCustomLevel implements Screen {
                 if (resultat == JFileChooser.APPROVE_OPTION) {
                     final File dossierSelect = chooser.getSelectedFile();
 
+                    // Retour sur le thread de LibGDX pour modifier l'interface utilisateur
                     Gdx.app.postRunnable(new Runnable() {
                         @Override
                         public void run() {
@@ -171,12 +178,16 @@ public class EcranCustomLevel implements Screen {
         }).start();
     }
 
+    /**
+     * Parse le fichier music.json du dossier sélectionné et met à jour l'interface.
+     * * @param cheminDossier Le chemin absolu du dossier sélectionné par l'utilisateur.
+     */
     private void chargerDossierCustom(String cheminDossier) {
-        dossierCustomChemin = cheminDossier;
-        labelChemin.setText("[WHITE]Dossier : " + cheminDossier + "[]");
+        this.dossierCustomChemin = cheminDossier;
+        this.labelChemin.setText("[WHITE]Dossier : " + cheminDossier + "[]");
 
         FileHandle fichierMusicJson = Gdx.files.absolute(cheminDossier + "/music.json");
-        listeMusiquesCustom.clear();
+        this.listeMusiquesCustom.clear();
 
         if (fichierMusicJson.exists()) {
             try {
@@ -186,6 +197,7 @@ public class EcranCustomLevel implements Screen {
                 JsonValue noms = jsonBase.get("musicname");
                 JsonValue fichiers = jsonBase.get("musicfile");
 
+                // Association des noms de musique à leurs fichiers respectifs
                 if (noms != null && fichiers != null) {
                     for (int i = 0; i < noms.size; i++) {
                         String nom = noms.getString(i);
@@ -194,25 +206,25 @@ public class EcranCustomLevel implements Screen {
                     }
                 }
 
-
-                // Si tout s'est bien passé et que le dossier est valide, on le sauvegarde pour la prochaine fois !
+                // Sauvegarde du chemin valide pour la prochaine session
                 prefs.putString("lastCustomDirectory", cheminDossier);
-                prefs.flush(); // On enregistre sur le disque dur
+                prefs.flush();
 
             } catch (Exception e) {
                 System.err.println("Erreur de lecture du music.json custom !");
                 listeMusiquesCustom.add(new EcranOptionsGame.MusiqueItem("Erreur JSON", ""));
             }
         } else {
-            labelChemin.setText("[RED]Erreur : Aucun music.json trouvé dans ce dossier ![]");
+            this.labelChemin.setText("[RED]Erreur : Aucun music.json trouvé dans ce dossier ![]");
         }
 
-        menuMusique.setItems(listeMusiquesCustom);
+        // Mise à jour de la liste déroulante (SelectBox)
+        this.menuMusique.setItems(listeMusiquesCustom);
 
         if (listeMusiquesCustom.size > 0 && !listeMusiquesCustom.first().nomFichier.isEmpty()) {
-            musiqueChoisie = listeMusiquesCustom.first().nomFichier;
+            this.musiqueChoisie = listeMusiquesCustom.first().nomFichier;
         } else {
-            musiqueChoisie = "";
+            this.musiqueChoisie = "";
         }
     }
 

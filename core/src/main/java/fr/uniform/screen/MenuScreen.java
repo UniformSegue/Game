@@ -20,6 +20,11 @@ import fr.uniform.Texture_File;
 import fr.uniform.object.menu.Background;
 import fr.uniform.object.menu.Title;
 
+/**
+ * Écran du menu principal du jeu.
+ * Point d'entrée de l'interface utilisateur, permettant la navigation vers
+ * les différents modes de jeu (Normal, Custom), les options, ou de quitter l'application.
+ */
 public class MenuScreen implements Screen {
 
     private final Game game;
@@ -34,38 +39,38 @@ public class MenuScreen implements Screen {
     public MenuScreen(Game game) {
         this.game = game;
 
-        // --- DÉCOR ET LOGOS ---
-        ensimLogo = new Sprite(Texture_File.ENSIM_LOGO);
+        // Initialisation des éléments visuels de fond et des logos
+        this.ensimLogo = new Sprite(Texture_File.ENSIM_LOGO);
         int width_ensim = 534;
         int height_ensim = 134;
-        ensimLogo.setSize(width_ensim, height_ensim);
-        ensimLogo.setPosition(1920 - width_ensim, 45);
+        this.ensimLogo.setSize(width_ensim, height_ensim);
+        this.ensimLogo.setPosition(1920 - width_ensim, 45);
 
-        batch = new SpriteBatch();
-        background = new Background(0, 0, GAME_SPEC.width, GAME_SPEC.height, Texture_File.BACKGROUND);
-        title = new Title(640, 720, Texture_File.TEXTURE_TITLE_WIDTH, Texture_File.TEXTURE_TITLE_HEIGHT, Texture_File.TITLE_DEFAULT);
+        this.batch = new SpriteBatch();
+        this.background = new Background(0, 0, GAME_SPEC.width, GAME_SPEC.height, Texture_File.BACKGROUND);
+        this.title = new Title(640, 720, Texture_File.TEXTURE_TITLE_WIDTH, Texture_File.TEXTURE_TITLE_HEIGHT, Texture_File.TITLE_DEFAULT);
 
-        // --- SCENE2D ET UI ---
-        stage = new Stage(new FitViewport(GAME_SPEC.width, GAME_SPEC.height));
+        // Configuration de la scène (Stage) et de la gestion des entrées utilisateur
+        this.stage = new Stage(new FitViewport(GAME_SPEC.width, GAME_SPEC.height));
         Gdx.input.setInputProcessor(stage);
 
-        skin = new Skin(Gdx.files.internal("ui/pixthulhu-ui.json"));
-        skin.getFont("font").getData().markupEnabled = true;
-        skin.getFont("subtitle").getData().markupEnabled = true;
-        skin.getFont("title").getData().markupEnabled = true;
+        this.skin = new Skin(Gdx.files.internal("ui/pixthulhu-ui.json"));
+        this.skin.getFont("font").getData().markupEnabled = true;
+        this.skin.getFont("subtitle").getData().markupEnabled = true;
+        this.skin.getFont("title").getData().markupEnabled = true;
 
-        // Création de la table centrale unique
+        // Structure de mise en page principale
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
 
-        // --- CRÉATION DES BOUTONS ---
+        // Déclaration des boutons de navigation
         TextButton btnPlay = new TextButton("[WHITE]JOUER[]", skin);
-        TextButton btnCustomLevel = new TextButton("[WHITE]CUSTOM LEVEL[]", skin); // Le nouveau bouton
+        TextButton btnCustomLevel = new TextButton("[WHITE]CUSTOM LEVEL[]", skin);
         TextButton btnOption = new TextButton("[WHITE]OPTIONS[]", skin);
         TextButton btnQuit = new TextButton("[WHITE]QUITTER[]", skin);
 
-        // --- ACTIONS DES BOUTONS ---
+        // Configuration des événements de clic
         btnPlay.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -77,8 +82,8 @@ public class MenuScreen implements Screen {
         btnCustomLevel.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Menu Custom Level ouvert !");
                 game.setScreen(new EcranCustomLevel(game));
+                dispose();
             }
         });
 
@@ -86,25 +91,24 @@ public class MenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(new EcranOptions(game));
+                dispose();
             }
         });
 
         btnQuit.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Fermeture du jeu...");
                 Gdx.app.exit();
             }
         });
 
-        // --- PLACEMENT DANS LA TABLE ---
-        // On met tout le monde à la même taille de police
+        // Mise à l'échelle des polices pour assurer la lisibilité
         btnPlay.getLabel().setFontScale(1.5f);
         btnCustomLevel.getLabel().setFontScale(1.5f);
         btnOption.getLabel().setFontScale(1.5f);
         btnQuit.getLabel().setFontScale(1.5f);
 
-        // On les empile les uns sur les autres avec un petit espace (padBottom)
+        // Agencement vertical des boutons dans la table centrale
         table.add(btnPlay).width(320).height(120).padTop(250).padBottom(30).row();
         table.add(btnCustomLevel).width(620).height(120).padBottom(30).row();
         table.add(btnOption).width(380).height(120).padBottom(30).row();

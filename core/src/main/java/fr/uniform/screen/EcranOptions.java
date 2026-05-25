@@ -19,6 +19,10 @@ import fr.uniform.GAME_SPEC;
 import fr.uniform.Texture_File;
 import fr.uniform.object.menu.Background;
 
+/**
+ * Écran de configuration des paramètres du jeu.
+ * Gère les préférences utilisateur telles que le volume audio et le mode d'affichage (plein écran).
+ */
 public class EcranOptions implements Screen {
 
     private final Game game;
@@ -28,69 +32,76 @@ public class EcranOptions implements Screen {
     private Background background;
     private Sprite ensimLogo;
 
-    // Pour sauvegarder le volume sur l'ordinateur du joueur
     private Preferences prefs;
 
     public EcranOptions(Game game) {
         this.game = game;
-        batch = new SpriteBatch();
+        this.batch = new SpriteBatch();
 
-        // On récupère ou on crée le fichier de sauvegarde des options
-        prefs = Gdx.app.getPreferences("UniformGameOptions");
-        // On récupère le volume sauvegardé (par défaut 0.5f, soit 50%)
+        // Chargement des préférences utilisateur pour la gestion du volume
+        this.prefs = Gdx.app.getPreferences("UniformGameOptions");
         float volumeSauvegarde = prefs.getFloat("musicVolume", 0.5f);
 
-        background = new Background(0, 0, GAME_SPEC.width, GAME_SPEC.height, Texture_File.BACKGROUND);
+        // Initialisation du fond et des éléments visuels
+        this.background = new Background(0, 0, GAME_SPEC.width, GAME_SPEC.height, Texture_File.BACKGROUND);
 
-        //Logo ENSIM
-        ensimLogo = new Sprite(Texture_File.ENSIM_LOGO);
+        this.ensimLogo = new Sprite(Texture_File.ENSIM_LOGO);
         int width_ensim = 534;
         int height_ensim = 134;
-        ensimLogo.setSize(width_ensim,height_ensim);
-        ensimLogo.setPosition(1920-width_ensim,45);
-        stage = new Stage(new FitViewport(GAME_SPEC.width, GAME_SPEC.height));
+        this.ensimLogo.setSize(width_ensim, height_ensim);
+        this.ensimLogo.setPosition(1920 - width_ensim, 45);
+
+        // Configuration de la scène (Stage) et de l'interface
+        this.stage = new Stage(new FitViewport(GAME_SPEC.width, GAME_SPEC.height));
         Gdx.input.setInputProcessor(stage);
 
-        skin = new Skin(Gdx.files.internal("ui/pixthulhu-ui.json"));
-        skin.getFont("font").getData().markupEnabled = true;
-        skin.getFont("title").getData().markupEnabled = true;
+        this.skin = new Skin(Gdx.files.internal("ui/pixthulhu-ui.json"));
+        this.skin.getFont("font").getData().markupEnabled = true;
+        this.skin.getFont("title").getData().markupEnabled = true;
 
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
 
-        // --- CRÉATION DES ÉLÉMENTS ---
-
+        // Déclaration des éléments de l'interface utilisateur
         Label titre = new Label("OPTIONS", skin, "title");
-
-        // Le texte qui affichera le pourcentage
         final Label labelVolume = new Label("Volume de la musique : " + (int)(volumeSauvegarde * 100) + "%[]", skin);
 
-        // Le SLIDER (Min: 0, Max: 1, Pas: 0.05, Vertical: false)
+        // Configuration du curseur de volume (Slider)
         final Slider sliderVolume = new Slider(0f, 1f, 0.05f, false, skin);
-        sliderVolume.setValue(volumeSauvegarde); // On place le curseur là où le joueur l'avait laissé
+        sliderVolume.setValue(volumeSauvegarde);
 
         TextButton btnRetour = new TextButton("Retour", skin);
+        final CheckBox checkFullscreen = new CheckBox("Plein ecran", skin);
+        checkFullscreen.setChecked(Gdx.graphics.isFullscreen());
 
-        // --- ACTIONS ---
+        // --- GESTION DES ÉVÉNEMENTS ---
 
-        // Quand le joueur bouge le curseur
+        // Mise à jour dynamique du volume et sauvegarde
         sliderVolume.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 float nouveauVolume = sliderVolume.getValue();
-
-                //On met à jour le texte en temps réel
                 labelVolume.setText("Volume de la musique : " + (int)(nouveauVolume * 100) + "%[]");
 
-                //On sauvegarde la nouvelle valeur dans les Préférences
                 prefs.putFloat("musicVolume", nouveauVolume);
-                prefs.flush(); // IMPORTANT : C'est ce qui force l'écriture sur le disque dur !
-
+                prefs.flush();
             }
         });
 
-        // Quand on clique sur Retour
+        // Bascule entre le mode plein écran et fenêtré
+        checkFullscreen.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (checkFullscreen.isChecked()) {
+                    Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+                } else {
+                    Gdx.graphics.setWindowedMode(1920, 1080);
+                }
+            }
+        });
+
+        // Retour au menu principal
         btnRetour.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -99,35 +110,14 @@ public class EcranOptions implements Screen {
             }
         });
 
-        final CheckBox checkFullscreen = new CheckBox("Plein ecran", skin);
-
-        // On vérifie si le jeu est DÉJÀ en plein écran pour cocher la case par défaut
-        checkFullscreen.setChecked(Gdx.graphics.isFullscreen());
-
-        //L'action quand on clique dessus
-        checkFullscreen.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                boolean isChecked = checkFullscreen.isChecked();
-
-                if (isChecked) {
-
-                    Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
-                } else {
-
-                    Gdx.graphics.setWindowedMode(1920, 1080);
-                }
-            }
-        });
-
-
-        // --- PLACEMENT DANS LA TABLE ---
+        // --- ASSEMBLAGE DE LA TABLE ---
         table.add(titre).padBottom(100).row();
+
         labelVolume.setFontScale(2f);
         table.add(labelVolume).padBottom(20).row();
+
         table.add(sliderVolume).width(550).padBottom(50).row();
         table.add(checkFullscreen).padBottom(40).row();
-
         table.add(btnRetour).width(300).height(100);
     }
 

@@ -27,8 +27,11 @@ import fr.uniform.GAME_SPEC;
 import fr.uniform.Texture_File;
 import fr.uniform.object.menu.Background;
 
-import java.util.Objects;
-
+/**
+ * Écran de préparation avant le lancement d'un niveau.
+ * Permet au joueur de choisir la piste musicale, la difficulté, et d'activer/désactiver le contrôle au souffle.
+ * Gère à la fois les niveaux intégrés (Mode Normal) et les niveaux importés (Mode Custom).
+ */
 public class EcranOptionsGame implements Screen {
 
     private final Game game;
@@ -42,10 +45,11 @@ public class EcranOptionsGame implements Screen {
     private String difficulte = "Moyen";
     private String musiqueChoisie = "";
 
-    // NOUVEAU : On garde en mémoire si on est en mode "Custom" ou "Normal"
     private boolean isCustomLevel = false;
 
-    // NOUVEAU : La classe devient "public" pour pouvoir être utilisée dans EcranCustomLevel
+    /**
+     * Classe utilitaire pour formater l'affichage des musiques dans le menu déroulant (SelectBox).
+     */
     public static class MusiqueItem {
         public String nomAffichage;
         public String nomFichier;
@@ -61,37 +65,42 @@ public class EcranOptionsGame implements Screen {
         }
     }
 
-    // --- CONSTRUCTEUR 1 : Appelé par le MenuScreen (Mode Normal) ---
+    /**
+     * Constructeur pour le Mode Normal (Niveaux intégrés).
+     */
     public EcranOptionsGame(Game game) {
-
         this(game, null, null);
     }
 
-    // --- CONSTRUCTEUR 2 : Appelé par EcranCustomLevel (Mode Custom) ---
+    /**
+     * Constructeur principal gérant le Mode Normal et le Mode Custom.
+     * * @param dossierCustomChemin Chemin du dossier personnalisé (null si mode normal).
+     * @param musiquesCustom Liste des musiques personnalisées (null si mode normal).
+     */
     public EcranOptionsGame(Game game, String dossierCustomChemin, Array<MusiqueItem> musiquesCustom) {
         this.game = game;
 
-        // Si le dossier n'est pas null, on sait qu'on est en mode custom !
         if (dossierCustomChemin != null) {
             this.isCustomLevel = true;
         }
 
-        background = new Background(0,0, GAME_SPEC.width,GAME_SPEC.height, Texture_File.BACKGROUND);
-        batch = new SpriteBatch();
+        this.background = new Background(0, 0, GAME_SPEC.width, GAME_SPEC.height, Texture_File.BACKGROUND);
+        this.batch = new SpriteBatch();
 
-        ensimLogo = new Sprite(Texture_File.ENSIM_LOGO);
-        ensimLogo.setSize(534,134);
-        ensimLogo.setPosition(1920-534,45);
+        this.ensimLogo = new Sprite(Texture_File.ENSIM_LOGO);
+        this.ensimLogo.setSize(534, 134);
+        this.ensimLogo.setPosition(1920 - 534, 45);
 
         float zoom = 1.5f;
-        stage = new Stage(new FitViewport(1920 / zoom, 1080 / zoom));
+        this.stage = new Stage(new FitViewport(1920 / zoom, 1080 / zoom));
         Gdx.input.setInputProcessor(stage);
 
-        skin = new Skin(Gdx.files.internal("ui/pixthulhu-ui.json"));
-        skin.getFont("font").getData().markupEnabled = true;
-        skin.getFont("subtitle").getData().markupEnabled = true;
-        skin.getFont("title").getData().markupEnabled = true;
+        this.skin = new Skin(Gdx.files.internal("ui/pixthulhu-ui.json"));
+        this.skin.getFont("font").getData().markupEnabled = true;
+        this.skin.getFont("subtitle").getData().markupEnabled = true;
+        this.skin.getFont("title").getData().markupEnabled = true;
 
+        // Bouton de retour contextuel (Menu Principal ou Menu Custom)
         Table tableRetour = new Table();
         tableRetour.setFillParent(true);
         tableRetour.top().left();
@@ -100,7 +109,6 @@ public class EcranOptionsGame implements Screen {
         btnRetour.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // Si on était en mode custom, on retourne au menu custom, sinon au menu normal
                 if (isCustomLevel) {
                     game.setScreen(new EcranCustomLevel(game));
                 } else {
@@ -117,6 +125,7 @@ public class EcranOptionsGame implements Screen {
         table.setFillParent(true);
         stage.addActor(table);
 
+        // Configuration de la CheckBox pour le contrôle au souffle
         final CheckBox checkSouffle = new CheckBox("Activer le souffle", skin);
         CheckBox.CheckBoxStyle styleWhiteCheckBox = new CheckBox.CheckBoxStyle(skin.get(CheckBox.CheckBoxStyle.class));
         styleWhiteCheckBox.fontColor = Color.WHITE;
@@ -129,6 +138,7 @@ public class EcranOptionsGame implements Screen {
             }
         });
 
+        // Configuration des boutons de difficulté
         final TextButton btnFacile = new TextButton("Facile", skin);
         final TextButton btnMoyen = new TextButton("Moyen", skin);
         final TextButton btnDifficile = new TextButton("Difficile", skin);
@@ -137,15 +147,17 @@ public class EcranOptionsGame implements Screen {
         TextButton.TextButtonStyle styleButtonClique = new TextButton.TextButtonStyle(skin.get(TextButton.TextButtonStyle.class));
         styleButtonBase.fontColor = Color.WHITE;
         styleButtonClique.fontColor = Color.RED;
-        btnMoyen.setStyle(styleButtonClique);
+        btnMoyen.setStyle(styleButtonClique); // Moyen sélectionné par défaut
 
         ClickListener difficulteListener = new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                // Réinitialisation visuelle des boutons
                 btnFacile.setStyle(styleButtonBase);
                 btnMoyen.setStyle(styleButtonBase);
                 btnDifficile.setStyle(styleButtonBase);
 
+                // Application du style actif sur le bouton cliqué
                 TextButton boutonClique = (TextButton) event.getListenerActor();
                 boutonClique.setStyle(styleButtonClique);
                 difficulte = boutonClique.getText().toString();
@@ -156,16 +168,10 @@ public class EcranOptionsGame implements Screen {
         btnMoyen.addListener(difficulteListener);
         btnDifficile.addListener(difficulteListener);
 
+        // Configuration du menu de sélection musical
         SelectBox<MusiqueItem> menuMusique = new SelectBox<>(skin);
 
-        // --- NOUVEAU : Sélection de la source des musiques ---
-        Array<MusiqueItem> listeMusiques;
-        if (isCustomLevel) {
-            listeMusiques = musiquesCustom; // On utilise la liste fournie par l'explorateur
-        } else {
-            listeMusiques = lireFichierJsonMusic(); // On utilise la liste de base
-        }
-
+        Array<MusiqueItem> listeMusiques = isCustomLevel ? musiquesCustom : lireFichierJsonMusic();
         menuMusique.setItems(listeMusiques);
 
         if (listeMusiques.size > 0) {
@@ -184,16 +190,18 @@ public class EcranOptionsGame implements Screen {
         btnPlay.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                boutonPlayClicked();
+                lancerNiveau();
             }
         });
 
+        // Assemblage de l'interface
         Label.LabelStyle textWhite = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
         textWhite.fontColor = Color.WHITE;
 
         Label musique = new Label("Choix de la musique :", skin);
         musique.setStyle(textWhite);
         musique.setFontScale(2f);
+
         table.add(musique).colspan(3).padTop(10).padBottom(10).row();
         menuMusique.setScale(2f);
         table.add(menuMusique).colspan(3).width(600).padBottom(10).row();
@@ -201,6 +209,7 @@ public class EcranOptionsGame implements Screen {
         Label difficulteLabel = new Label("Difficulte :", skin);
         difficulteLabel.setStyle(textWhite);
         difficulteLabel.setFontScale(2f);
+
         table.add(difficulteLabel).colspan(3).padBottom(0).row();
         table.add(btnFacile).pad(40).width(250).height(100);
         table.add(btnMoyen).pad(40).width(250).height(100);
@@ -210,6 +219,10 @@ public class EcranOptionsGame implements Screen {
         table.add(btnPlay).colspan(3).padTop(50).width(300).height(80);
     }
 
+    /**
+     * Lit la liste des musiques intégrées au jeu depuis les assets internes.
+     * * @return Un tableau d'items musicaux formatés pour l'interface.
+     */
     private Array<MusiqueItem> lireFichierJsonMusic() {
         Array<MusiqueItem> liste = new Array<>();
         try {
@@ -230,10 +243,16 @@ public class EcranOptionsGame implements Screen {
         return liste;
     }
 
+    /**
+     * Récupère la vitesse de défilement (scroll speed) associée à la difficulté choisie
+     * directement dans le fichier JSON de la beatmap.
+     * * @param nomFichier Chemin du fichier JSON du niveau.
+     * @param niveauDifficulte "Facile", "Moyen" ou "Difficile".
+     * @return La vitesse entière correspondante (valeur par défaut en cas d'erreur).
+     */
     private int getVitesseDepuisJson(String nomFichier, String niveauDifficulte) {
         try {
             JsonReader reader = new JsonReader();
-            // NOUVEAU : On gère les chemins absolus pour les niveaux custom !
             FileHandle fichierJson = isCustomLevel ? Gdx.files.absolute(nomFichier) : Gdx.files.internal(nomFichier);
 
             JsonValue jsonBase = reader.parse(fichierJson);
@@ -247,38 +266,59 @@ public class EcranOptionsGame implements Screen {
         } catch (Exception e) {
             System.err.println("Erreur de lecture de la difficulté dans le fichier : " + nomFichier);
         }
+
+        // Valeurs de secours si la lecture du JSON échoue
         if (niveauDifficulte.equals("Facile")) return 10;
         if (niveauDifficulte.equals("Difficile")) return 20;
         return 15;
     }
 
-    private void boutonPlayClicked() {
+    /**
+     * Calcule les paramètres finaux et initialise l'écran de jeu (LevelScreen).
+     */
+    private void lancerNiveau() {
         int vitesse = getVitesseDepuisJson(musiqueChoisie, difficulte);
         int vitesse_turbo = vitesse + 5;
 
-        // ATTENTION : J'ai ajouté isCustomLevel à la fin.
-        // Tu devras modifier le constructeur de LevelScreen pour qu'il l'accepte !
-        // game.setScreen(new LevelScreen(game, vitesse, vitesse_turbo, musiqueChoisie, 6, souffleActive, isCustomLevel));
-        int nombre_lane = 6;
-        if (difficulte.equals("Facile")) {nombre_lane = 4;}
-        // En attendant que tu modifies LevelScreen, je laisse ton ancienne ligne :
-        if(this.isCustomLevel){
+        // Adaptation du nombre de pistes selon la difficulté
+        int nombre_lane = difficulte.equals("Facile") ? 4 : 6;
+
+        if (this.isCustomLevel) {
             game.setScreen(new LevelScreen(game, vitesse, vitesse_turbo, musiqueChoisie, nombre_lane, souffleActive));
-        }else{
-            game.setScreen(new LevelScreen(game, vitesse, vitesse_turbo, "music\\"+musiqueChoisie, nombre_lane, souffleActive));
-
+        } else {
+            // Utilisation d'un slash / pour garantir la compatibilité multi-plateforme dans LibGDX
+            game.setScreen(new LevelScreen(game, vitesse, vitesse_turbo, "music/" + musiqueChoisie, nombre_lane, souffleActive));
         }
-
 
         dispose();
     }
 
-    @Override public void render(float delta) {
+    @Override
+    public void render(float delta) {
         ScreenUtils.clear(Color.BLACK);
-        batch.begin(); background.sprite.draw(batch); ensimLogo.draw(batch); batch.end();
-        stage.act(delta); stage.draw();
+        batch.begin();
+        background.sprite.draw(batch);
+        ensimLogo.draw(batch);
+        batch.end();
+
+        stage.act(delta);
+        stage.draw();
     }
-    @Override public void resize(int width, int height) { stage.getViewport().update(width, height, true); }
-    @Override public void dispose() { stage.dispose(); skin.dispose(); }
-    @Override public void show() {} @Override public void pause() {} @Override public void resume() {} @Override public void hide() {}
+
+    @Override
+    public void resize(int width, int height) {
+        stage.getViewport().update(width, height, true);
+    }
+
+    @Override
+    public void dispose() {
+        stage.dispose();
+        skin.dispose();
+        batch.dispose();
+    }
+
+    @Override public void show() {}
+    @Override public void pause() {}
+    @Override public void resume() {}
+    @Override public void hide() {}
 }

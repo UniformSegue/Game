@@ -4,36 +4,53 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import fr.uniform.Main;
 
-/** Launches the desktop (LWJGL3) application. */
+/** * Lanceur principal pour la version Bureau (Desktop) du jeu.
+ * Utilise le backend LWJGL3 de LibGDX pour créer la fenêtre et gérer le contexte OpenGL.
+ */
 public class Lwjgl3Launcher {
+
     public static void main(String[] args) {
-        if (StartupHelper.startNewJvmIfRequired()) return; // This handles macOS support and helps on Windows.
+        // Gère la compatibilité système requise (notamment pour le thread principal sous macOS)
+        if (StartupHelper.startNewJvmIfRequired()) return;
+
         createApplication();
     }
 
+    /**
+     * Instancie et lance l'application LibGDX avec la configuration définie.
+     */
     private static Lwjgl3Application createApplication() {
         return new Lwjgl3Application(new Main(), getDefaultConfiguration());
     }
 
+    /**
+     * Définit les paramètres de la fenêtre de jeu, les limites de framerate et les options de rendu.
+     * @return La configuration LWJGL3 prête à être utilisée.
+     */
     private static Lwjgl3ApplicationConfiguration getDefaultConfiguration() {
         Lwjgl3ApplicationConfiguration configuration = new Lwjgl3ApplicationConfiguration();
-        configuration.setTitle("Ocarine Hero");
-        //// Vsync limits the frames per second to what your hardware can display, and helps eliminate
-        //// screen tearing. This setting doesn't always work on Linux, so the line after is a safeguard.
+
+        // Titre affiché sur la bordure de la fenêtre
+        configuration.setTitle("Ocarina Hero");
+
+        // --- Paramètres d'affichage et de performance ---
+
+        // Active la synchronisation verticale pour éviter les déchirures d'image (screen tearing)
         configuration.useVsync(true);
-        //// Limits FPS to the refresh rate of the currently active monitor, plus 1 to try to match fractional
-        //// refresh rates. The Vsync setting above should limit the actual FPS to match the monitor.
-        //configuration.setForegroundFPS(Lwjgl3ApplicationConfiguration.getDisplayMode().refreshRate + 1);
+
+        // Limite le jeu à 60 FPS constants (essentiel pour la stabilité de la physique et des rythmes)
         configuration.setForegroundFPS(60);
+
+        // Applique la résolution virtuelle globale définie dans GAME_SPEC
         configuration.setWindowedMode(GAME_SPEC.width, GAME_SPEC.height);
 
+        // --- Ressources graphiques et système ---
+
+        // Définition des icônes de la fenêtre (barre des tâches, etc.) selon différentes résolutions
         configuration.setWindowIcon("logo128.png", "logo64.png", "logo32.png", "logo16.png");
 
-        //// This should improve compatibility with Windows machines with buggy OpenGL drivers, Macs
-        //// with Apple Silicon that have to emulate compatibility with OpenGL anyway, and more.
-        //// This uses the dependency `com.badlogicgames.gdx:gdx-lwjgl3-angle` to function.
-        //// You can choose to remove the following line and the mentioned dependency if you want; they
-        //// are not intended for games that use GL30 (which is compatibility with OpenGL ES 3.0).
+        // Améliore la compatibilité OpenGL (notamment pour les drivers Windows capricieux
+        // ou l'émulation sur Apple Silicon) en utilisant ANGLE.
         configuration.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.ANGLE_GLES20, 0, 0);
 
         return configuration;
